@@ -1,0 +1,18 @@
+{
+    "editor.tabSize": 2,
+    "[javascript]": {
+      "editor.formatOnSave": true
+    },
+    "[css]": {
+      "editor.suggest.insertMode": "replace",
+      "gitlens.codeLens.scopes": [
+        "document"
+      ],
+      "editor.formatOnSave": true
+    },
+    "eslint.alwaysShowStatus": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
+    "eslint.lintTask.enable": true
+}
