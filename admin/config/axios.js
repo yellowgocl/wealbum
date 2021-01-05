@@ -1,10 +1,9 @@
 const env = require('../env')
-let isProduction = /^true$/i.test(env.IS_PRODUCTION)
+let isProduction = process.env.NODE_ENV == 'production'
 module.exports = {
-    // baseURL: env.API_HOST,
-    // proxy: !env.IS_PRODUCTION,
+    // baseURL: 'http://127.0.0.1:3000/api/',
     // credentials: true,
-    proxy: !isProduction,
+    proxy: true,
     timeout: 60 * 1000,    
     debug: !isProduction,
 }

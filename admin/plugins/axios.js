@@ -9,7 +9,7 @@ export default ({$axios, redirect, app }) => {
         }
     })
     $axios.onError(error => {
-        if (!error.response || error.response.status == 500) {
+        if (error.response && error.response.status == 500) {
             redirect('/error')
         }
        //  return error
@@ -21,10 +21,11 @@ export default ({$axios, redirect, app }) => {
             return Promise.reject(data)
         }
         if (data.code == 200) {
-            return data.data
+            return data
         } else {
             if (data.code == 401) {
-                app.$storage.removeItem('auth')
+                // app.$storage.removeItem('auth')
+                app.$auth.reset()
                 redirect('/auth/login')
             }
             return Promise.reject(data)

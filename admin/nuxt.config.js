@@ -1,14 +1,18 @@
 import colors from 'vuetify/es5/util/colors'
-const { axios, proxy } = require("./config");
+const { axios, proxy, auth } = require("./config");
 const env = require("./env");
 export default {
-  mode: 'universal',
+  mode: 'spa',
   /*
    ** Headers of the page
    */
   env,
   axios,
   proxy,
+  auth,
+  router: {
+    middleware: ["auth"]
+  },
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
@@ -35,7 +39,9 @@ export default {
    ** Plugins to load before mounting the App
    */
   plugins: [
-    '~/plugins/app', '~/plugins/axios'
+    '~/plugins/app', '~/plugins/axios', '~/plugins/vuetify',
+    { src: '~/plugins/video-player.js', ssr: false }, 
+    { src: '~/plugins/sortable.js', ssr: false }
   ],
   /*
    ** Nuxt.js dev-modules
@@ -50,9 +56,10 @@ export default {
    */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
+    '@nuxtjs/dotenv',
     '@nuxtjs/axios',
+    '@nuxtjs/auth'
     // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv'
   ],
   /*
    ** Axios module configuration
@@ -93,6 +100,7 @@ export default {
     /*
      ** You can extend webpack config here
      */
+    transpile: ['@nuxtjs/auth'],
     extend(config, ctx) {}
   }
 }
