@@ -1,6 +1,73 @@
 const config = require('../../config/szwegoConfig')
 const userApi = require('../../lib/szwego/userApi') // 引入数据库方法
 const ApiErrorNames = require('../../error/ApiErrorNames')
+const { User } = require('../../lib/pool')
+
+/**
+ * 增加账户 
+ */
+exports.add = async (ctx, next) => {
+  const { body } = ctx.request
+  try {
+    const user = User.build({ name: 'admin', password: '123456' })
+    await user.save().then(res => {
+      console.log(res)
+    })
+    ctx.body = ApiErrorNames.getSuccessInfo({
+      a: 'bbb'
+    })
+  } catch (error) {
+    ctx.throw(500)
+  }
+}
+
+/**
+ * 删除账户 
+ */
+exports.remove = async (ctx, next) => {
+  const { body } = ctx.request
+  try {
+    ctx.body = ApiErrorNames.getSuccessInfo({})
+  } catch (error) {
+    ctx.throw(500)
+  }
+}
+
+/**
+ * 编辑账户 
+ */
+exports.edit = async (ctx, next) => {
+  const { body } = ctx.request
+  try {
+    ctx.body = ApiErrorNames.getSuccessInfo({})
+  } catch (error) {
+    ctx.throw(500)
+  }
+}
+
+/**
+ * 获取账户列表
+ */
+exports.list = async (ctx, next) => {
+  const { body } = ctx.request
+  try {
+    ctx.body = ApiErrorNames.getSuccessInfo({})
+  } catch (error) {
+    ctx.throw(500)
+  }
+}
+
+/**
+ * 获取账户详情
+ */
+exports.info = async (ctx, next) => {
+  const { body } = ctx.request
+  try {
+    ctx.body = ApiErrorNames.getSuccessInfo({})
+  } catch (error) {
+    ctx.throw(500)
+  }
+}
 
 /**
  * 普通登录

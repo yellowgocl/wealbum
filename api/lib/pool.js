@@ -1,6 +1,7 @@
 const mysql = require('mysql2')
 const config = require('../config/defaultConfig')
-const Sequelize = require('sequelize')
+const { Sequelize, DataTypes } = require('sequelize')
+const { user } = require('./model/user')
 
 const poolConfig = {
   host: config.database.HOST,
@@ -24,13 +25,21 @@ const sequelize = new Sequelize(config.database.DATABASE, config.database.USER, 
   },
   define: {   //模型设置
       freezeTableName:true,    //自定义表面，不设置会自动将表名转为复数形式
-      timestamps:false    //自动生成更新时间、创建时间字段：updatedAt,createdAt
+      timestamps:true    //自动生成更新时间、创建时间字段：updatedAt,createdAt
   }
   //
 })
 
+const User = sequelize.define('user', user)
+
+sync = async () => {
+  await sequelize.sync({ force: true })
+}
+
+sync()
+
 // test sequelize
-// db.authenticate().then(()=>{
+// sequelize.authenticate().then(()=>{
 //   console.log("数据库已连接！")
 // }).catch(err=>{
 //   console.log(err)
@@ -66,5 +75,6 @@ const createTable = (sql) => {
 module.exports = {
   query,
   sequelize,
+  User,
   createTable
 }
