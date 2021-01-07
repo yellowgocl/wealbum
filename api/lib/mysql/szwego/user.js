@@ -14,16 +14,40 @@ initTables()
 const add = async (value) => {
   // { name, password }
   const { username, password } = value
-  let result = await insert(User, {
-    name: username,
-    password
-  })
+  let insertData = {}
+  let result = {}
   const szwego = await szwgoApi.user.login({
     phone_number: username,
     password,
     showConfirm: false 
   })
-  console.log(szwego)
+  if (szwego.errcode === 0) {
+    const { shop_id, union_id, shop_name, token } = szwego
+    insertData = {
+      name: username,
+      password,
+      shop_id,
+      shop_name,
+      union_id,
+      token
+    }
+    result = await insert(User, insertData)
+  }
+  return result
+}
+
+const remove = async (value) => {
+  const { id } = value
+  let result = await destory(User, {
+    where: {
+      id
+    }
+  })
+  return result
+}
+
+const list = async () => {
+  let result = await select(User, {}, true)
   return result
 }
 
@@ -39,5 +63,7 @@ const findUser = async (name) => {
 module.exports = {
   // 暴露方法
   findUser,
-  add
+  add,
+  remove,
+  list
 }

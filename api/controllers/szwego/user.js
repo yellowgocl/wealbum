@@ -15,10 +15,7 @@ exports.add = async (ctx, next) => {
     //   password: 'w11221122',
     //   showConfirm: false 
     // })
-    console.log(user)
-    ctx.body = ApiErrorNames.getSuccessInfo({
-      a: 'bbb'
-    })
+    ctx.body = ApiErrorNames.getSuccessInfo(user)
   } catch (error) {
     ctx.throw(500)
   }
@@ -30,7 +27,8 @@ exports.add = async (ctx, next) => {
 exports.remove = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    ctx.body = ApiErrorNames.getSuccessInfo({})
+    const user = await szwegoSql.user.remove(body)
+    ctx.body = ApiErrorNames.getSuccessInfo(user)
   } catch (error) {
     ctx.throw(500)
   }
@@ -54,7 +52,8 @@ exports.edit = async (ctx, next) => {
 exports.list = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    ctx.body = ApiErrorNames.getSuccessInfo({})
+    const list = await szwegoSql.user.list()
+    ctx.body = ApiErrorNames.getSuccessInfo(list)
   } catch (error) {
     ctx.throw(500)
   }
