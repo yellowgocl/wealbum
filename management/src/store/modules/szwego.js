@@ -23,7 +23,7 @@ const actions = {
     })
   },
   // user remove
-  userRemove({ commit }, id) {
+  userRemove({ commit }, { id }) {
     return new Promise((resolve, reject) => {
       user.remove({ id })
         .then((response) => {
