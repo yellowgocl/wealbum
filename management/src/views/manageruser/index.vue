@@ -1,5 +1,5 @@
 <template>
-  <div class="szwego-user-container">
+  <div class="manager-user-container">
     <el-button
       type="primary"
       circle
@@ -17,17 +17,11 @@
         width="180"
       />
       <el-table-column
-        prop="shopname"
-        label="名称"
+        prop="password"
+        label="密码"
         width="180"
       />
       <el-table-column>
-        <el-button
-          type="info"
-          icon="el-icon-message"
-        >
-          信息
-        </el-button>
         <el-button
           type="primary"
           icon="el-icon-edit"
@@ -50,6 +44,9 @@
         <el-form-item label="密码" prop="password" label-width="auto">
           <el-input v-model="userFormData.password" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="确认密码" prop="checkPass" label-width="auto">
+          <el-input v-model="userFormData.checkPass" autocomplete="off" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="resetForm('userFormData')">重置</el-button>
@@ -65,36 +62,47 @@
 import { Loading } from 'element-ui'
 
 export default {
-  name: 'Szwegouser',
+  name: 'Manageruser',
   components: { },
   data() {
+    var validatePassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.userFormData.checkPass !== '') {
+          this.$refs.userFormData.validateField('checkPass')
+        }
+        callback()
+      }
+    }
+    var validateCheckPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.userFormData.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       addPaneVisible: false,
       userFormRules: {
         username: [
-          { required: true, message: '请输入账号', trigger: 'blur' },
-          { min: 11, message: '不能少于11位', trigger: 'blur' },
-          { max: 11, message: '不能多于11位', trigger: 'blur' }
+          { required: true, message: '请输入账户', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: '请输入正确密码', trigger: 'blur' }
+          { validator: validatePassword, trigger: 'blur', required: true }
+        ],
+        checkPass: [
+          { validator: validateCheckPass, trigger: 'blur', required: true }
         ]
       },
       userFormData: {
         username: '',
-        password: ''
+        password: '',
+        checkPass: ''
       },
       userList: [
-        {
-          username: '17073797630',
-          shopname: 'DAKA销售找图号',
-          password: 'w11221122'
-        },
-        {
-          username: '15814865666',
-          shopname: '王小虎',
-          password: 'w11221122'
-        }
       ]
     }
   },
@@ -137,7 +145,7 @@ export default {
     },
     addHandle() {
       this.loading
-      this.$store.dispatch('szwego/userAdd', this.userFormData)
+      this.$store.dispatch('user/add', this.userFormData)
         .then(res => {
           console.log(res)
           this.loading.close()
@@ -158,7 +166,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.szwego-user-container {
+.manager-user-container {
   padding: 50px;
 }
 </style>

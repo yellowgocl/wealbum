@@ -73,13 +73,13 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/manageruser',
     children: [
       {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
-        name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        path: 'manageruser',
+        component: () => import('@/views/manageruser/index'),
+        name: '后台账号管理',
+        meta: { title: '后台账号管理', icon: 'user', affix: true }
       }
     ]
   },
@@ -92,7 +92,7 @@ export const constantRoutes = [
         path: 'szwegouser',
         component: () => import('@/views/szwegouser/index'),
         name: '微商相册账号管理',
-        meta: { title: '微商相册账号管理', icon: 'dashboard', affix: true }
+        meta: { title: '微商相册账号管理', icon: 'user', affix: true }
       }
     ]
   }

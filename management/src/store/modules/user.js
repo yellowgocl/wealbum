@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo, add, remove, edit, list } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -29,6 +29,25 @@ const mutations = {
 }
 
 const actions = {
+  // user add
+  add({ commit }, userInfo) {
+    const { username, password } = userInfo
+    return add({ username: username.trim(), password: password })
+  },
+  // user remove
+  remove({ commit }, userInfo) {
+    // const { id } = userInfo
+    return remove(userInfo)
+  },
+  // user edit
+  edit({ commit }, userInfo) {
+    // const { username, password } = userInfo
+    return edit(userInfo)
+  },
+  // user list
+  list({ commit }) {
+    return list()
+  },
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
