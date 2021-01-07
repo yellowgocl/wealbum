@@ -18,15 +18,13 @@ exports.login = async (ctx, next) => {
       return
     }
     const bodys = JSON.parse(JSON.stringify(user))
-    // 匹配密码是否相等
-    if ((await user.user_pwd) === body.password) {
+    // // 匹配密码是否相等
+    if (user.password === body.password) {
       const data = {
-        user: user.user_id,
-        // 生成 token 返回给客户端
+        user: user.name,
         token: jwt.sign(
           {
-            data: user.user_id,
-            // 设置 token 过期时间
+            data: user.name,
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 60 seconds * 60 minutes = 1 hour
           },
           config.secret
@@ -61,23 +59,34 @@ exports.info = async (ctx, next) => {
       if (!user) {
         ctx.body = ApiErrorNames.getErrorInfo(ApiErrorNames.USER_NOT_EXIST)
       } else {
-        const cont = user.user_count + 1
-        const updateInfo = [cont, moment().format('YYYY-MM-DD HH:mm:ss'), user.id]
-        await userSql
-          .updataUserInfo(updateInfo)
-          .then((res) => {
-            const data = {
-              avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-              name: user.user_id,
-              // roles: [user.user_admin === 0 ? 'admin' : '']
-              roles: [user.role_name]
-            }
-            ctx.body = ApiErrorNames.getSuccessInfo(data)
-          })
-          .catch((error) => {
-            console.error(error)
-            ctx.body = ApiErrorNames.getErrorInfo(ApiErrorNames.DATA_IS_WRONG)
-          })
+        const updateInfo = await userSql.updataUserInfo({
+          loginCount: user.loginCount + 1,
+          loginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+          name: user.name
+        })
+        const data = {
+          avatar: user.avatar,
+          name: user.name,
+          roles: user.roles
+        }
+        ctx.body = ApiErrorNames.getSuccessInfo(data)
+      //   const cont = user.user_count + 1
+      //   const updateInfo = [cont, moment().format('YYYY-MM-DD HH:mm:ss'), user.id]
+      //   await userSql
+      //     .updataUserInfo(updateInfo)
+      //     .then((res) => {
+      //       const data = {
+      //         avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      //         name: user.user_id,
+      //         // roles: [user.user_admin === 0 ? 'admin' : '']
+      //         roles: [user.role_name]
+      //       }
+      //       ctx.body = ApiErrorNames.getSuccessInfo(data)
+      //     })
+      //     .catch((error) => {
+      //       console.error(error)
+      //       ctx.body = ApiErrorNames.getErrorInfo(ApiErrorNames.DATA_IS_WRONG)
+      //     })
       }
     } else {
       ctx.body = ApiErrorNames.getErrorInfo(ApiErrorNames.INVALID_TOKEN)
@@ -93,7 +102,38 @@ exports.info = async (ctx, next) => {
 exports.logout = async (ctx, next) => {
   try {
     // ctx.status = 200
-    ctx.body = ApiErrorNames.getSuccessInfo()
+    ctx.body = ApiErrorNames.getSuccessInfo('退出登陆')
+  } catch (error) {
+    ctx.throw(500)
+  }
+}
+
+/**
+ * 增加账户 
+ */
+exports.add = async (ctx, next) => {
+  const { body } = ctx.request
+  try {
+    const { username, password } = body
+    ctx.body = ApiErrorNames.getSuccessInfo(body)
+  } catch (error) {
+    if (error.parent.code === 'ER_DUP_ENTRY' && error.parent.errno === 1062) {
+      ctx.body = ApiErrorNames.getErrorInfo(ApiErrorNames.USER_HAS_EXISTED)
+    } else {
+      ctx.throw(500)
+    }
+  }
+}
+
+/**
+ * 删除账户 
+ */
+exports.remove = async (ctx, next) => {
+  const { body } = ctx.request
+  try {
+    ctx.body = ApiErrorNames.getSuccessInfo({
+      a: 'bbb'
+    })
   } catch (error) {
     ctx.throw(500)
   }

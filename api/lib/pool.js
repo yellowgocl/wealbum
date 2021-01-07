@@ -1,14 +1,7 @@
-const mysql = require('mysql2')
+// const mysql = require('mysql2')
 const config = require('../config/defaultConfig')
-const { Sequelize, DataTypes } = require('sequelize')
-const { user } = require('./model/user')
-
-const poolConfig = {
-  host: config.database.HOST,
-  user: config.database.USER,
-  password: config.database.PASSWORD,
-  database: config.database.DATABASE
-}
+const { Sequelize } = require('sequelize')
+const { isArray } = require('lodash')
 
 const sequelize = new Sequelize(config.database.DATABASE, config.database.USER, config.database.PASSWORD, {
   dialect: 'mysql',    //数据库类型
@@ -30,13 +23,36 @@ const sequelize = new Sequelize(config.database.DATABASE, config.database.USER, 
   //
 })
 
-const User = sequelize.define('user', user)
-
-sync = async () => {
-  await sequelize.sync({ force: true })
+const insert = async (tabel, value) => {
+  let t = await tabel.create(value)
+  return new Promise((resolve, reject) => {
+    resolve(t)
+  })
 }
 
-sync()
+const select = async (tabel, value) => {
+  let t = await tabel.findAll(value)
+  if (isArray(t) && t.length > 0) {
+    t = t[0]['dataValues']
+  }
+  return new Promise((resolve, reject) => {
+    resolve(t)
+  })
+}
+
+const update = async (tabel, value) => {
+  let t = await tabel.update(value)
+  return new Promise((resolve, reject) => {
+    resolve(t)
+  })
+}
+
+const destory = async (tabel, value) => {
+  let t = await tabel.destroy(value)
+  return new Promise((resolve, reject) => {
+    resolve(t)
+  })
+}
 
 // test sequelize
 // sequelize.authenticate().then(()=>{
@@ -46,35 +62,10 @@ sync()
 //   console.log("连接失败")
 // })
 
-const pool = mysql.createPool(poolConfig)
-
-const query = (sql, values) => {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      // console.log(err)
-      if (err) {
-        resolve(err)
-      } else {
-        connection.query(sql, values, (err, rows) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(rows)
-          }
-          connection.release()
-        })
-      }
-    })
-  })
-}
-
-const createTable = (sql) => {
-  return query(sql, [])
-}
-
 module.exports = {
-  query,
   sequelize,
-  User,
-  createTable
+  insert,
+  select,
+  update,
+  destory
 }

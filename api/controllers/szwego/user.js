@@ -1,7 +1,7 @@
 const config = require('../../config/szwegoConfig')
-const userApi = require('../../lib/szwego/userApi') // 引入数据库方法
+const szwegoSql = require('../../lib/mysql/szwego') 
+const szwegoApi = require('../../lib/szwegoApi') // 引入szwegoApi
 const ApiErrorNames = require('../../error/ApiErrorNames')
-const { User } = require('../../lib/pool')
 
 /**
  * 增加账户 
@@ -9,10 +9,13 @@ const { User } = require('../../lib/pool')
 exports.add = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    const user = User.build({ name: 'admin', password: '123456' })
-    await user.save().then(res => {
-      console.log(res)
-    })
+    const user = await szwegoSql.user.add(body)
+    // const szwego = await userApi.login({
+    //   phone_number: '17073797630',
+    //   password: 'w11221122',
+    //   showConfirm: false 
+    // })
+    console.log(user)
     ctx.body = ApiErrorNames.getSuccessInfo({
       a: 'bbb'
     })

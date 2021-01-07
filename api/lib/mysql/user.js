@@ -1,40 +1,60 @@
-// const createUsers = require('../../config/createUsers')
-const { query } = require('../pool')
+const { sequelize, select } = require('../pool')
+const { user, role, permission, userRole, rolePermission } = require('../model/user')
+const { Op } = require('sequelize')
+const { assign } = require('lodash')
 // 建表
-// createTable(createUsers.users)
-// createTable(createUsers.role)
-// createTable(createUsers.permission)
-// createTable(createUsers.userRole)
-// createTable(createUsers.rolePermission)
+const User = sequelize.define('t_user', user) // 用户表
+const Role = sequelize.define('t_role', role) // 角色表
+const Permission = sequelize.define('t_permission', permission) // 权限表
+const UserRole = sequelize.define('user_role', userRole) // 用户角色关系
+const RolePermission = sequelize.define('role_permission', rolePermission) // 角色权限关系
+
+const initTables = async () => {
+  await User.sync()
+  await Role.sync()
+  await Permission.sync()
+  await UserRole.sync()
+  await RolePermission.sync()
+}
+
+initTables()
 
 // 查询用户是否存在
-const findUser = async (id) => {
-  const _sql = `SELECT * FROM user_info where user_id="${id}" limit 1;`
-  let result = await query(_sql)
-  // console.log(process.env)
-  if (Array.isArray(result) && result.length > 0) {
-    result = result[0]
-  } else {
-    result = null
-  }
+const findUser = async (name) => {
+  let result = await select(User, {
+    where: {
+      name
+    }
+  })
   return result
 }
 // 查询用户以及用户角色
-const findUserAndRole = async (id) => {
-  const _sql = `SELECT u.*,r.role_name FROM user_info u,user_role ur,role_info r where u.id=(SELECT id FROM user_info where user_id="${id}" limit 1) and ur.user_id=u.id and r.id=ur.user_id limit 1;`
-  let result = await query(_sql)
-  if (Array.isArray(result) && result.length > 0) {
-    result = result[0]
-  } else {
-    result = null
-  }
+const findUserAndRole = async (name) => {
+  const u = await select(User, {
+    where: {
+      name
+    }
+  })
+  const { uid } = await select(UserRole, {
+    where: { uid: u.id }
+  })
+  const role = await select(Role, {
+    where: { id: uid }
+  })
+  let result = assign(u, { roles: [role.name] })
   return result
 }
 
 // 更新用户登录次数和登录时间
 const updataUserInfo = async (value) => {
-  const _sql = 'UPDATE user_info SET user_count = ?, user_login_time = ? WHERE id = ?;'
-  return query(_sql, value)
+  const { name, ...rest } = value
+  const u = await User.update(rest, {
+    where: {
+      name
+    }
+  })
+  let result = u.length > 0 ? u[0]['dataValues'] : null
+  return result
 }
 
 module.exports = {
