@@ -1,6 +1,6 @@
 const { sequelize, insert, select, update, destory } = require('../../pool')
-const { user } = require('../../model/szwego')
-const szwgoApi = require('../../szwegoApi')
+const user = require('../../model/szwego/user')
+const szwegoApi = require('../../szwegoApi')
 const { Op } = require('sequelize')
 
 const User = sequelize.define('szwego_user', user) // 用户表
@@ -16,7 +16,7 @@ const add = async (value) => {
   const { username, password } = value
   let insertData = {}
   let result = {}
-  const szwego = await szwgoApi.user.login({
+  const szwego = await szwegoApi.user.login({
     phone_number: username,
     password,
     showConfirm: false 
@@ -51,10 +51,10 @@ const list = async () => {
   return result
 }
 
-const findUser = async (name) => {
+const findUser = async (id) => {
   let result = await select(User, {
     where: {
-      name
+      id
     }
   })
   return result

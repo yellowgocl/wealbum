@@ -6,6 +6,7 @@ router.post('/szwego/user/add', szwegoControl.user.add)
 router.post('/szwego/user/remove', szwegoControl.user.remove)
 router.post('/szwego/user/edit', szwegoControl.user.edit)
 router.get('/szwego/user/list', szwegoControl.user.list)
+router.get('/szwego/shop/list', szwegoControl.shop.list)
 router.get('/szwego/user/info', szwegoControl.user.info)
 
 module.exports = router
