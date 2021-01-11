@@ -1,7 +1,7 @@
 const { sequelize, select } = require('../pool')
 const { user, role, permission, userRole, rolePermission } = require('../model/user')
 const { Op } = require('sequelize')
-const { assign } = require('lodash')
+const { assign, isEmpty } = require('lodash')
 // 建表
 const User = sequelize.define('t_user', user) // 用户表
 const Role = sequelize.define('t_role', role) // 角色表

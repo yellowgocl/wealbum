@@ -12,36 +12,64 @@
       style="width: 100%"
     >
       <el-table-column
-        prop="username"
+        prop="name"
         label="账号"
         width="180"
       />
       <el-table-column
-        prop="shopname"
+        prop="shop_name"
         label="名称"
         width="180"
       />
-      <el-table-column>
-        <el-button
-          type="info"
-          icon="el-icon-message"
-        >
-          信息
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-edit"
-        >
-          编辑
-        </el-button>
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-        >
-          删除
-        </el-button>
+      <el-table-column
+        fixed="right"
+        label="操作"
+        width="auto"
+      >
+        <template slot-scope="scope">
+          <el-button
+            type="info"
+            icon="el-icon-message"
+            @click="infoHandle(scope.row)"
+          >
+            信息
+          </el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            @click="editHandle(scope.row)"
+          >
+            编辑
+          </el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            @click="() => {
+              deleteTipsVisible = true
+              currentDeleteRow = scope.row
+            }"
+          >
+            删除
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      title="提示"
+      :visible.sync="deleteTipsVisible"
+      width="30%"
+      center
+    >
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          @click="deleteTipsVisible = false"
+        >
+          取 消
+        </el-button>
+        <el-button type="primary" @click="deleteHandle(currentDeleteRow)">确 定</el-button>
+      </span>
+    </el-dialog>
     <el-dialog title="增加账号" :visible.sync="addPaneVisible">
       <el-form ref="userFormData" :model="userFormData" :rules="userFormRules">
         <el-form-item label="账号" prop="username" label-width="auto">
@@ -70,6 +98,8 @@ export default {
   data() {
     return {
       addPaneVisible: false,
+      deleteTipsVisible: false,
+      currentDeleteRow: null,
       userFormRules: {
         username: [
           { required: true, message: '请输入账号', trigger: 'blur' },
@@ -84,18 +114,7 @@ export default {
         username: '',
         password: ''
       },
-      userList: [
-        {
-          username: '17073797630',
-          shopname: 'DAKA销售找图号',
-          password: 'w11221122'
-        },
-        {
-          username: '15814865666',
-          shopname: '王小虎',
-          password: 'w11221122'
-        }
-      ]
+      userList: []
     }
   },
   computed: {
@@ -114,12 +133,17 @@ export default {
       if (!value) {
         this.clearUserFormData()
       }
+    },
+    deleteTipsVisible(value) {
+      if (!value) {
+        this.currentDeleteRow = null
+      }
     }
   },
   created() {
   },
   mounted() {
-    this.loading.close()
+    this.fetchList()
   },
   methods: {
     resetForm(formName) {
@@ -135,13 +159,42 @@ export default {
         }
       })
     },
-    addHandle() {
+    async addHandle() {
       this.loading
-      this.$store.dispatch('szwego/userAdd', this.userFormData)
+      await this.$store.dispatch('szwego/userAdd', this.userFormData)
         .then(res => {
           console.log(res)
           this.loading.close()
           this.addPaneVisible = false
+        })
+        .catch(() => {
+          this.loading.close()
+        })
+      this.fetchList()
+    },
+    infoHandle(row) {
+    },
+    editHandle(row) {
+    },
+    async deleteHandle(row) {
+      console.log(row)
+      this.loading
+      await this.$store.dispatch('szwego/userRemove', row)
+        .then(res => {
+          this.deleteTipsVisible = false
+          this.loading.close()
+        })
+        .catch(() => {
+          this.loading.close()
+        })
+      this.fetchList()
+    },
+    async fetchList() {
+      this.loading
+      await this.$store.dispatch('szwego/userList')
+        .then(res => {
+          this.userList = res
+          this.loading.close()
         })
         .catch(() => {
           this.loading.close()

@@ -1,8 +1,8 @@
 // const mysql = require('mysql2')
 const config = require("../config/defaultConfig");
 const { Sequelize } = require("sequelize");
-const { isArray } = require("lodash");
-console.info(config);
+const { isEmpty, map, size } = require("lodash");
+
 const sequelize = new Sequelize(
   config.database.DATABASE,
   config.database.USER,
@@ -33,15 +33,18 @@ const sequelize = new Sequelize(
 const insert = async (tabel, value) => {
   let t = await tabel.create(value);
   return new Promise((resolve, reject) => {
-    resolve(t);
+    resolve(t["dataValues"]);
   });
 };
 
-const select = async (tabel, value) => {
+const select = async (tabel, value, isList = false) => {
   let t = await tabel.findAll(value);
-  if (isArray(t) && t.length > 0) {
-    t = t[0]["dataValues"];
+  if (!isEmpty(t)) {
+    t = map(t, (o) => {
+      return o["dataValues"];
+    });
   }
+  t = size(t) === 1 && !isList ? t[0] : t;
   return new Promise((resolve, reject) => {
     resolve(t);
   });
