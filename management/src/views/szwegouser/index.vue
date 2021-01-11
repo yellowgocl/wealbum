@@ -35,6 +35,13 @@
             信息
           </el-button>
           <el-button
+            type="info"
+            icon="el-icon-more"
+            @click="shopListHandle(scope.row)"
+          >
+            商铺列表
+          </el-button>
+          <el-button
             type="primary"
             icon="el-icon-edit"
             @click="editHandle(scope.row)"
@@ -188,6 +195,16 @@ export default {
           this.loading.close()
         })
       this.fetchList()
+    },
+    async shopListHandle(row) {
+      this.loading
+      // await this.$store.dispatch('szwego/shopList', row.id)
+      //   .then(res => {
+      //     console.log(res)
+      //   })
+      //   .catch(() => {
+      //     this.loading.close()
+      //   })
     },
     async fetchList() {
       this.loading

@@ -1,68 +1,61 @@
 // const mysql = require('mysql2')
-const config = require("../config/defaultConfig");
-const { Sequelize } = require("sequelize");
-const { isEmpty, map, size } = require("lodash");
+const config = require('../config/defaultConfig')
+const { Sequelize } = require('sequelize')
+const { isEmpty, map, size} = require('lodash')
 
-const sequelize = new Sequelize(
-  config.database.DATABASE,
-  config.database.USER,
-  config.database.PASSWORD,
-  {
-    dialect: "mysql", //数据库类型
-    host: config.database.HOST, //主机地址
-    port: config.database.PORT,
-    pool: {
-      //连接池设置
-      max: 5, //最大连接数
+const sequelize = new Sequelize(config.database.DATABASE, config.database.USER, config.database.PASSWORD, {
+  dialect: 'mysql',    //数据库类型
+  host: config.database.HOST,   //主机地址
+  port: config.database.PORT,
+  pool: {      //连接池设置
+      max: 5,  //最大连接数
       idle: 30000,
-      acquire: 60000,
-    },
-    dialectOptions: {
-      charset: "utf8mb4", //字符集
-      collate: "utf8mb4_unicode_ci",
-    },
-    define: {
-      //模型设置
-      freezeTableName: true, //自定义表面，不设置会自动将表名转为复数形式
-      timestamps: true, //自动生成更新时间、创建时间字段：updatedAt,createdAt
-    },
-    //
+      acquire: 60000
+  },
+  dialectOptions:{
+      charset:'utf8mb4',  //字符集
+      collate:'utf8mb4_unicode_ci'
+  },
+  define: {   //模型设置
+      freezeTableName:true,    //自定义表面，不设置会自动将表名转为复数形式
+      timestamps:true    //自动生成更新时间、创建时间字段：updatedAt,createdAt
   }
-);
+  //
+})
 
 const insert = async (tabel, value) => {
-  let t = await tabel.create(value);
+  let t = await tabel.create(value)
   return new Promise((resolve, reject) => {
-    resolve(t["dataValues"]);
-  });
-};
+    resolve(t['dataValues'])
+  })
+}
 
 const select = async (tabel, value, isList = false) => {
-  let t = await tabel.findAll(value);
+  let t = await tabel.findAll(value)
   if (!isEmpty(t)) {
-    t = map(t, (o) => {
-      return o["dataValues"];
-    });
+    t = map(t, o => {
+      return o['dataValues']
+    })
   }
-  t = size(t) === 1 && !isList ? t[0] : t;
+  t = size(t) === 1 && !isList ? t[0] : t
   return new Promise((resolve, reject) => {
-    resolve(t);
-  });
-};
+    resolve(t)
+  })
+}
 
-const update = async (tabel, value) => {
-  let t = await tabel.update(value);
+const update = async (tabel, value, condition) => {
+  let t = await tabel.update(value, condition)
   return new Promise((resolve, reject) => {
-    resolve(t);
-  });
-};
+    resolve(t)
+  })
+}
 
 const destory = async (tabel, value) => {
-  let t = await tabel.destroy(value);
+  let t = await tabel.destroy(value)
   return new Promise((resolve, reject) => {
-    resolve(t);
-  });
-};
+    resolve(t)
+  })
+}
 
 // test sequelize
 // sequelize.authenticate().then(()=>{
@@ -77,5 +70,5 @@ module.exports = {
   insert,
   select,
   update,
-  destory,
-};
+  destory
+}
