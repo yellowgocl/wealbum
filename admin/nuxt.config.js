@@ -1,8 +1,9 @@
-import colors from 'vuetify/es5/util/colors'
+import colors from "vuetify/es5/util/colors";
 const { axios, proxy, auth } = require("./config");
 const env = require("./env");
+console.info(proxy);
 export default {
-  mode: 'spa',
+  mode: "spa",
   /*
    ** Headers of the page
    */
@@ -14,34 +15,36 @@ export default {
     middleware: ["auth"]
   },
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    titleTemplate: "%s - " + process.env.npm_package_name,
+    title: process.env.npm_package_name || "",
     meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { charset: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
-        hid: 'description',
-        name: 'description',
-        content: process.env.npm_package_description || ''
+        hid: "description",
+        name: "description",
+        content: process.env.npm_package_description || ""
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#fff' },
+  loading: { color: "#fff" },
   /*
    ** Global CSS
    */
-  css: ['~/assets/app.scss'],
+  css: ["~/assets/app.scss"],
   /*
    ** Plugins to load before mounting the App
    */
   plugins: [
-    '~/plugins/app', '~/plugins/axios', '~/plugins/vuetify',
-    { src: '~/plugins/video-player.js', ssr: false }, 
-    { src: '~/plugins/sortable.js', ssr: false }
+    "~/plugins/app",
+    "~/plugins/axios",
+    "~/plugins/vuetify",
+    { src: "~/plugins/video-player.js", ssr: false },
+    { src: "~/plugins/sortable.js", ssr: false }
   ],
   /*
    ** Nuxt.js dev-modules
@@ -49,16 +52,16 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     // '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify'
+    "@nuxtjs/vuetify"
   ],
   /*
    ** Nuxt.js modules
    */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/dotenv',
-    '@nuxtjs/axios',
-    '@nuxtjs/auth'
+    "@nuxtjs/dotenv",
+    "@nuxtjs/axios",
+    "@nuxtjs/auth"
     // Doc: https://github.com/nuxt-community/dotenv-module
   ],
   /*
@@ -72,12 +75,12 @@ export default {
   vuetify: {
     defaultAssets: {
       font: true,
-      icons: 'md'
+      icons: "md"
     },
     icons: {
-        iconfont: 'md', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
+      iconfont: "md" // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
     },
-    customVariables: ['~/assets/variables.scss'],
+    customVariables: ["~/assets/variables.scss"],
     theme: {
       dark: true,
       themes: {
@@ -100,7 +103,7 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    transpile: ['@nuxtjs/auth'],
+    transpile: ["@nuxtjs/auth"],
     extend(config, ctx) {}
   }
-}
+};

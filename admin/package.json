@@ -11,7 +11,7 @@
     "start": "nuxt start",
     "start:test": "cross-env NODE_ENV=test nuxt start",
     "generate": "nuxt generate",
-    "mock": "PORT=3722 mocker ./api/mock",
+    "mock": "cross-env PORT=3722 mocker ./api/mock",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "pm2:test": "cross-env NODE_ENV=test pm2 start pm2.config.json --only test.zib.wbms.com"
   },

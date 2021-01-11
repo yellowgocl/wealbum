@@ -68,8 +68,8 @@ export default {
       showPassword: false,
       valid: true,
       lazy: false,
-      name: '',
-      password: '',
+      name: 'admin',
+      password: '123456',
       nameRules: [
         v => !!v || '名称不能为空',
         v => (v && v.length <= 30) || '内容长度不能超出30个字符',
@@ -98,7 +98,7 @@ export default {
       if (flag) {
         this.loading = true
         
-        this.$api.login({ data: { account: this.name, password: this.password } }).then(res => {
+        this.$api.login({ data: { username: this.name, password: this.password } }).then(res => {
           // this.$auth.$storage.setUniversal('auth', res.authorization, false)
           // this.$storage.setItem('auth', res.authorization)
           // let redirectUrl = this.$auth.$storage.getUniversal('redirect') || '/'
