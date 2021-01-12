@@ -8,6 +8,7 @@ router.post('/szwego/user/edit', szwegoControl.user.edit)
 router.get('/szwego/user/list', szwegoControl.user.list)
 router.get('/szwego/shop/list', szwegoControl.shop.list)
 router.get('/szwego/user/info', szwegoControl.user.info)
+router.get('/szwego/customSync', szwegoControl.customSync)
 
 module.exports = router
 //将页面暴露出去

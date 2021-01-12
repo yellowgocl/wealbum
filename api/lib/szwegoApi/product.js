@@ -1,9 +1,9 @@
 const config = require('../../config/szwegoConfig')
 const request = require('../request')
-const { size, last, assign, concat } = require('lodash')
+const { size, last, assign, concat, map } = require('lodash')
 
-const getProductList = async (params) => {
-  const { token, shop_id } = params
+const getProductList = async (params, addSqlFun = null) => {
+  const { token, shop_id, id, ...rest } = params
   let data = {
     albumId: shop_id,
     searchValue: '',
@@ -17,6 +17,14 @@ const getProductList = async (params) => {
   while (!isLast) {
     const l = await fetchProductListByPage(data, token)
     if (size(l) > 0) {
+      if (addSqlFun) {
+        let i = 0
+        while (i < size(l)) {
+          const prod_info = assign(l[i], {sid: id})
+          await addSqlFun(prod_info)
+          i += 1
+        }
+      }
       const timestamp = last(l)['time_stamp']
       assign(data, { timestamp })
       totalList = concat(totalList, l)

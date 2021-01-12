@@ -17,7 +17,7 @@ const initTables = async () => {
 initTables()
 
 const add = async (data) => {
-  // console.log(data)
+  console.log(data)
   const { sid, goods_id, link, time_stamp, title, imgs, imgsSrc } = data
   const insertData = {
     sid,
@@ -49,7 +49,9 @@ const add = async (data) => {
     }
   } else {
   }
-  return prd
+  return new Promise(resolve => {
+    resolve(prd)
+  })
 }
 
 module.exports = {

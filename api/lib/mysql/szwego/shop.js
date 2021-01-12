@@ -52,10 +52,10 @@ const add = async (data) => {
       })
     }
   }
-  return shop
-  // return new Promise(resolve => {
-  //   resolve(shop)
-  // })
+  // return shop
+  return new Promise(resolve => {
+    resolve(shop)
+  })
 }
 
 const list = async (params) => {
@@ -77,7 +77,9 @@ const list = async (params) => {
     list.push(shop)
     i += 1
   }
-  return list
+  return new Promise(resolve => {
+    resolve(list)
+  })
 }
 
 module.exports = {
