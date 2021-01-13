@@ -8,7 +8,7 @@
 <script>
 export default {
   asyncData({ redirect }) {
-    redirect('/co/material')
+    redirect('/store')
   }
 }
 </script>

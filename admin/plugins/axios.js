@@ -20,7 +20,7 @@ export default ({ $axios, redirect, app }) => {
     if (!data) {
       return Promise.reject(data);
     }
-    if (data.flag) {
+    if (data.flag || Number.parseInt(data.code) === 0) {
       return data;
     } else {
       if (data.code == 401) {

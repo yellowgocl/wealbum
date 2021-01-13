@@ -5,7 +5,12 @@ const mod = {
   GET_DRAWER_MENU: {
     url: "/api/auth/v1/menu/tree/own",
     method: "post",
-    mock: false
+    mock: true
+  },
+  GET_STORE_LIST: {
+    url: "/api/stories/",
+    method: "get",
+    mock: true
   },
   ORDER_CATEGORY: {
     url: "/api/content/v1/category/order",

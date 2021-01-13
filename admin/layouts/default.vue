@@ -50,7 +50,6 @@
                     </v-list-item-title>
                   </v-list-item-content>
                 </template>
-                <!-- <v-list-item-group v-model="model"> -->
                 <v-list-item
                   v-for="child in item.children"
                   :to="child.url"
@@ -66,7 +65,6 @@
                     </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <!-- </v-list-item-group> -->
               </v-list-group>
               <v-list-item v-else :key="item.id" link>
                 <v-list-item-action>
@@ -88,8 +86,6 @@
           ><v-btn color="secondary" tile x-large text block>登出</v-btn></v-col
         >
       </v-container>
-      <!-- <v-spacer></v-spacer>
-      <v-btn >登出</v-btn> -->
     </v-navigation-drawer>
     <v-app-bar
       :clipped-left="clipped"
@@ -99,12 +95,6 @@
       :prominent="prominent"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <!-- <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn> -->
       <v-toolbar-title v-text="title" />
       <v-spacer />
     </v-app-bar>
@@ -158,7 +148,7 @@ export default {
   computed: {
     ...mapState(["auth"]),
     account() {
-      return this.auth.user.account.substr(0, 2).toUpperCase();
+      return this.auth.user.name.toUpperCase();
     }
   },
   data() {
@@ -169,7 +159,7 @@ export default {
       items: [],
       miniVariant: false,
       prominent: false,
-      title: "智伴微商城管理后台"
+      title: "微商相册管理后台"
     };
   }
 };

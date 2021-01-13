@@ -1,7 +1,7 @@
 {
-  "name": "zib-wbms",
+  "name": "wealbum",
   "version": "1.0.0",
-  "description": "zib wechat bussines manage system",
+  "description": "wechat bussines album manage system",
   "author": "got.wong",
   "private": true,
   "scripts": {
