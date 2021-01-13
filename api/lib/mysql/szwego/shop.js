@@ -1,43 +1,85 @@
 const { sequelize, insert, select, update, destory } = require('../../pool')
 const shop = require('../../model/szwego/shop')
-const szwegoApi = require('../../szwegoApi')
-const userSql = require('./user')
-const { isEmpty, map } = require('lodash')
+const userShop = require('../../model/szwego/userShop')
+const { isEmpty, map, forEach } = require('lodash')
 
 const Shop = sequelize.define('szwego_shop', shop, {
   charset: 'utf8mb4'
-}) 
+})
+
+const UserShop = sequelize.define('szwego_user_shop', userShop)
 
 const initTables = async () => {
   await Shop.sync()
+  await UserShop.sync()
 }
 
 initTables()
 
 const add = async (data) => {
-  const item = await select(Shop, {
+  const { user_id, ...rest } = data
+  let shop = {}
+  shop = await select(Shop, {
     where: {
-      parrent_id: data.parrent_id,
-      shop_id: data.shop_id
+      shop_id: rest.shop_id
     }
   })
-  if (isEmpty(item)) {
-    await insert(Shop, data)
+  if (isEmpty(shop)) {
+    shop = await insert(Shop, rest)
+    const usData = {
+      uid: user_id,
+      sid: shop.id
+    }
+    await insert(UserShop, usData)
+    // console.log(insertedItem)
   } else {
+    const usItem = await select(UserShop, {
+      where: {
+        uid: user_id,
+        sid: shop.id
+      }
+    })
+    if (isEmpty(usItem)) {
+      await insert(UserShop, {
+        uid: user_id,
+        sid: shop.id
+      })
+    } else {
+      await update(Shop, rest, {
+        where: {
+          id: shop.id
+        }
+      })
+    }
   }
+  // return shop
+  return new Promise(resolve => {
+    resolve(shop)
+  })
 }
 
 const list = async (params) => {
-  const id = params.id || -1
-  const timestamp = params.timestamp || Date.now()
-  const user = await userSql.findUser(id)
-  let token = ''
-  if (user) {
-    token = user.token
+  const uid = params.uid || -1
+  const sidList = await select(UserShop, {
+    where: {
+      uid
+    }
+  })
+  const list = []
+  let i = 0
+  while (i < sidList.length) {
+    const o = sidList[i]
+    const shop = await select(Shop, {
+      where: {
+        id: o.sid
+      }
+    })
+    list.push(shop)
+    i += 1
   }
-  const list = await szwegoApi.shop.getAlbumList({token, timestamp})
-  let result = list
-  return result
+  return new Promise(resolve => {
+    resolve(list)
+  })
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 import szwego from '@/api/szwego'
-const { user } = szwego
+const { user, shop } = szwego
 
 const state = {
 }
@@ -66,6 +66,19 @@ const actions = {
   userList({ commit }) {
     return new Promise((resolve, reject) => {
       user.list()
+        .then((response) => {
+          const { data } = response
+          resolve(data)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  },
+  // shop list
+  shopList({ commit }, uid) {
+    return new Promise((resolve, reject) => {
+      shop.list(uid)
         .then((response) => {
           const { data } = response
           resolve(data)
