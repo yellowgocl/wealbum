@@ -5,12 +5,6 @@ const { Op } = require('sequelize')
 
 const User = sequelize.define('szwego_user', user) // 用户表
 
-const initTables = async () => {
-  await User.sync()
-}
-
-initTables()
-
 const add = async (value) => {
   // { name, password }
   const { username, password } = value
@@ -62,6 +56,7 @@ const findUser = async (id) => {
 
 module.exports = {
   // 暴露方法
+  User,
   findUser,
   add,
   remove,

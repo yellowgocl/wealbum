@@ -9,13 +9,6 @@ const Shop = sequelize.define('szwego_shop', shop, {
 
 const UserShop = sequelize.define('szwego_user_shop', userShop)
 
-const initTables = async () => {
-  await Shop.sync()
-  await UserShop.sync()
-}
-
-initTables()
-
 const add = async (data) => {
   const { user_id, ...rest } = data
   let shop = {}
@@ -83,6 +76,8 @@ const list = async (params) => {
 }
 
 module.exports = {
+  Shop,
+  UserShop,
   add,
   list
 }

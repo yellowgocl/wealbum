@@ -9,15 +9,8 @@ const Product = sequelize.define('szwego_product', product, {
 
 const ProductImg = sequelize.define('szwego_product_img', productImg)
 
-const initTables = async () => {
-  await Product.sync()
-  await ProductImg.sync()
-}
-
-initTables()
-
 const add = async (data) => {
-  console.log(data)
+  // console.log(data)
   const { sid, goods_id, link, time_stamp, title, imgs, imgsSrc } = data
   const insertData = {
     sid,
@@ -55,5 +48,7 @@ const add = async (data) => {
 }
 
 module.exports = {
+  Product,
+  ProductImg,
   add
 }
