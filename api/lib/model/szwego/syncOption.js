@@ -4,6 +4,5 @@ module.exports = {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  start_date: DataTypes.DATE,
-  end_date: DataTypes.DATE
+  start: DataTypes.DATE
 }

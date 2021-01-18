@@ -5,8 +5,8 @@ const moment = require('moment')
 
 const getProductList = async (params, addSqlFun = null) => {
   const { token, shop_id, id, option, ...rest } = params
-  const startDate = option.start_date ? moment(option.start_date).format('YYYY-MM-DD') : '2021-01-01'
-  const endDate = option.end_date ? moment(option.end_date).format('YYYY-MM-DD') : '2021-01-10'
+  const startDate = option.start ? moment(option.start).format('YYYY-MM-DD') : '2021-01-01'
+  const endDate = option.end ? moment(option.end).format('YYYY-MM-DD') : '2021-01-10'
   let data = {
     albumId: shop_id,
     searchValue: '',
@@ -26,14 +26,14 @@ const getProductList = async (params, addSqlFun = null) => {
           const prod_info = assign(l[i], { sid: id })
           console.log(size(prod_info.imgs))
           if (size(prod_info.imgs) >= 9) {
-            await addSqlFun(prod_info)
+            const prd = await addSqlFun(prod_info)
+            totalList = concat(totalList, [prd])
           }
           i += 1
         }
       }
       const timestamp = last(l)['time_stamp']
       assign(data, { timestamp })
-      totalList = concat(totalList, l)
     } else {
       isLast = true
     }

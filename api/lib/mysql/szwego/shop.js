@@ -28,7 +28,6 @@ const add = async (data) => {
   } else {
     const usItem = await select(UserShop, {
       where: {
-        uid: user_id,
         sid: shop.id
       }
     })

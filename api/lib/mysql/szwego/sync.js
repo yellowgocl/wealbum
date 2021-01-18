@@ -1,31 +1,45 @@
 const { sequelize, insert, select, update, destory } = require('../../pool')
 const syncHistory = require('../../model/szwego/syncHistory')
 const syncOption = require('../../model/szwego/syncOption')
-const syncShop = require('../../model/szwego/syncShop')
-const { isEmpty } = require('lodash')
+const shopHistory = require('../../model/szwego/shopHistory')
+const { isEmpty, isArray, size, concat } = require('lodash')
 
 const SyncHistory = sequelize.define('szwego_sync_history', syncHistory)
 const SyncOption = sequelize.define('szwego_sync_option', syncOption)
-const SyncShop = sequelize.define('szwego_sync_shop', syncShop)
+const ShopHistory = sequelize.define('szwego_sync_shop_history', shopHistory)
 
 const addHistory = async (data) => {
-  const { timestamp } = data
-  const history = await insert(SyncHistory, { date: timestamp })
+  const history = await insert(SyncHistory, data)
   return new Promise(resolve => {
     resolve(history)
   })
 }
 
-const addSyncShop = async (data) => {
-  const { shid, sid } = data
-  const syncShop = await insert(SyncShop, { shid, sid })
+const updateHistory = async (data) => {
+  const { id, ...rest } = data
+  const history = await update(SyncHistory, rest, { where: { id } })
   return new Promise(resolve => {
-    resolve(syncShop)
+    resolve(history)
+  })
+}
+
+const getHistory = async (data) => {
+  const { id } = data
+  const history = await select(SyncHistory, { where: id })
+  return new Promise(resolve => {
+    resolve(history)
+  })
+}
+
+const getHistorys = async () => {
+  const history = await select(SyncHistory, {}, true)
+  return new Promise(resolve => {
+    resolve(history)
   })
 }
 
 const addOption = async (data) => {
-  const { sid, start_date, end_date } = data
+  const { sid, start } = data
   const item = await select(SyncOption, {
     where: {
       sid
@@ -33,7 +47,7 @@ const addOption = async (data) => {
   })
   let option = {}
   if (isEmpty(item)) {
-    option = await insert(SyncOption, { sid, start_date, end_date })
+    option = await insert(SyncOption, { sid, start })
   } else {
     option = item
   }
@@ -54,12 +68,39 @@ const getOption = async (data) => {
   })
 }
 
+const addShopHistory = async (data) => {
+  const { shid, sid } = data
+  const shopHistory = await insert(ShopHistory, { shid, sid })
+  return new Promise(resolve => {
+    resolve(shopHistory)
+  })
+}
+
+const getShopHistorys = async (data) => {
+  const { sid } = data
+  let shopHistorys = await select(ShopHistory, {
+    where: {
+      sid
+    }
+  }, true)
+  if (!isArray(shopHistorys)) {
+    shopHistorys = [shopHistorys]
+  }
+  return new Promise(resolve => {
+    resolve(shopHistorys)
+  })
+}
+
 module.exports = {
   SyncHistory,
   SyncOption,
-  SyncShop,
+  ShopHistory,
   addOption,
   getOption,
   addHistory,
-  addSyncShop
+  getHistorys,
+  getHistory,
+  updateHistory,
+  addShopHistory,
+  getShopHistorys
 }

@@ -3,7 +3,7 @@ const shop = require('./shop')
 const schedule = require('node-schedule')
 const szwegoSql = require('../../lib/mysql/szwego')
 const szwegoApi = require('../../lib/szwegoApi')
-const { map, assign, size, concat } = require('lodash')
+const { map, assign, size, concat, last, isNull } = require('lodash')
 const product = require('../../lib/model/szwego/product')
 const moment = require('moment')
 const ApiErrorNames = require('../../error/ApiErrorNames')
@@ -13,10 +13,9 @@ const scheduleCron = {
   autoSync: '0 0 0 * * *'
 }
 
-
 const time_zone = 8
 
-let syncStartDate =  '2021-01-01 00:00:00' // 1609430400000
+let syncStartDate = '2020-01-01 00:00:00' // 1609430400000
 let syncEndDate = '2021-01-10 00:00:00' // 1610208000000
 
 let isSyncing = false
@@ -53,13 +52,12 @@ const syncShopList = async () => {
   isSyncing = true
   let ul = await szwegoSql.user.list()
   let i = 0
-  let timestamp = Date.now()
-  const history = await szwegoSql.sync.addHistory({ timestamp })
+  let nowtime = Date.now()
   while (i < size(ul)) {
     const user = ul[i]
     const token = user.token
     const user_id = user.id
-    const sl = await szwegoApi.shop.getAlbumList({ token, timestamp })
+    const sl = await szwegoApi.shop.getAlbumList({ token, timestamp: nowtime })
     let j = 0
     while (j < size(sl)) {
       const shop_info = sl[j]
@@ -75,35 +73,53 @@ const syncShopList = async () => {
         total_goods
       }
       const shop = await szwegoSql.shop.add(sqlData)
-      const option = await szwegoSql.sync.addOption(
-        {
-          sid: shop.id,
-          start_date: syncStartDate,
-          end_date: syncEndDate
-        }
-      )
-      const syncShop = await szwegoSql.sync.addSyncShop({
-        shid: history.id,
-        sid: shop.id
+      const option = await szwegoSql.sync.addOption({
+        sid: shop.id,
+        start: syncStartDate
       })
       j += 1
     }
     i += 1
   }
-  syncProducts()
+  syncProducts(nowtime)
 }
 
-const syncProducts = async () => {
+const syncProducts = async (nowtime = null) => {
+  if (isNull(nowtime)) nowtime = Date.now()
+  const history = await szwegoSql.sync.addHistory({ start: nowtime })
   const shopList = await getTotalShopList()
   let i = 0
   let productsTotal = 0
   while (i < size(shopList)) {
     const shop = shopList[i]
-    const option = await szwegoSql.sync.getOption({ sid: shop.id })
-    const pl = await szwegoApi.product.getProductList(assign(shop, {option}), szwegoSql.product.add)
+    const shopHistorys = await szwegoSql.sync.getShopHistorys({ sid: shop.id })
+    const isFirstSync = !(size(shopHistorys) > 0)
+    // console.log(`isFirstSync: ${isFirstSync}`)
+    let start = ''
+    if (isFirstSync) {
+      const option = await szwegoSql.sync.getOption({
+        sid: shop.id
+      })
+      start = option.start
+    } else {
+      const his = await szwegoSql.sync.getHistory({ id: last(shopHistorys).shid })
+      start = his.start
+    }
+    await szwegoSql.sync.addShopHistory({
+      shid: history.id,
+      sid: shop.id
+    })
+    const end = history.start
+    const prdListOption = {
+      start,
+      end
+    }
+    const pl = await szwegoApi.product.getProductList(assign(shop, { option: prdListOption }), szwegoSql.product.add)
     productsTotal += size(pl)
     i += 1
   }
+  const now = Date.now()
+  await szwegoSql.sync.updateHistory({ id: history.id, end: now, total: productsTotal })
   console.log(`syncing complete...totalCount: ${productsTotal}`)
   isSyncing = false
 }
@@ -130,11 +146,11 @@ const customSync = async (ctx, next) => {
   const { query } = ctx
   try {
     syncShopList()
-    ctx.body = ApiErrorNames.getSuccessInfo({msg: '同步开始'})
+    ctx.body = ApiErrorNames.getSuccessInfo({ msg: '同步开始' })
   } catch (error) {
     ctx.throw(500)
   }
-  
+
   // syncProducts()
 }
 // syncShopList()

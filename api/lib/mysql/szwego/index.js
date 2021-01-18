@@ -8,8 +8,8 @@ shop.UserShop.belongsTo(user.User, { foreignKey: 'uid' })
 product.Product.belongsTo(shop.Shop, { foreignKey: 'sid' })
 product.ProductImg.belongsTo(product.ProductImg, { foreignKey: 'pid' })
 sync.SyncOption.belongsTo(shop.Shop, { foreignKey: 'sid' })
-sync.SyncShop.belongsTo(shop.Shop, { foreignKey: 'sid' })
-sync.SyncShop.belongsTo(sync.SyncHistory, { foreignKey: 'shid' })
+sync.ShopHistory.belongsTo(shop.Shop, { foreignKey: 'sid' })
+sync.ShopHistory.belongsTo(sync.SyncHistory, { foreignKey: 'shid' })
 
 const initTables = async () => {
   await user.User.sync()
@@ -19,7 +19,7 @@ const initTables = async () => {
   await product.ProductImg.sync()
   await sync.SyncHistory.sync()
   await sync.SyncOption.sync()
-  await sync.SyncShop.sync()
+  await sync.ShopHistory.sync()
 }
 
 initTables()

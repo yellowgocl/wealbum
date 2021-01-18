@@ -1,4 +1,6 @@
 const { DataTypes } = require('sequelize')
 module.exports = {
-  date: DataTypes.DATE
+  start: DataTypes.DATE,
+  end: DataTypes.DATE,
+  total: DataTypes.INTEGER
 }
