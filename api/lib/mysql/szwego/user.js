@@ -2,6 +2,7 @@ const { sequelize, insert, select, update, destory } = require('../../pool')
 const user = require('../../model/szwego/user')
 const szwegoApi = require('../../szwegoApi')
 const { Op } = require('sequelize')
+const { size } = require('lodash')
 
 const User = sequelize.define('szwego_user', user) // 用户表
 
@@ -41,8 +42,30 @@ const remove = async (value) => {
 }
 
 const list = async () => {
-  let result = await select(User, {}, true)
-  return result
+  const userList = await select(User, {}, true)
+  return userList
+}
+
+const updateToken = async (user) => {
+  const { name, password, id } = user
+  const szwego = await szwegoApi.user.login({
+    phone_number: name,
+    password,
+    showConfirm: false 
+  })
+  if (szwego.errcode === 0) {
+    const { shop_id, union_id, shop_name, token } = szwego
+    const updateData = {
+      shop_id,
+      shop_name,
+      union_id,
+      token
+    }
+    await update(User, updateData, { where: { id }})
+  }
+  return new Promise(resolve => {
+    resolve(szwego)
+  })
 }
 
 const findUser = async (id) => {
@@ -60,5 +83,6 @@ module.exports = {
   findUser,
   add,
   remove,
-  list
+  list,
+  updateToken
 }

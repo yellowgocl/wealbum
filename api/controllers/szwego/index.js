@@ -55,7 +55,7 @@ const syncShopList = async () => {
   let nowtime = Date.now()
   while (i < size(ul)) {
     const user = ul[i]
-    const token = user.token
+    const { token } = await szwegoSql.user.updateToken(user)
     const user_id = user.id
     const sl = await szwegoApi.shop.getAlbumList({ token, timestamp: nowtime })
     let j = 0
