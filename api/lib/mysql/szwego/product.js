@@ -1,6 +1,7 @@
 const { sequelize, insert, select, update, destory } = require('../../pool')
 const product = require('../../model/szwego/product')
 const productImg = require('../../model/szwego/productImg')
+const productStatus = require('../../model/szwego/productStatus')
 const { isEmpty, map, forEach, size } = require('lodash')
 
 const Product = sequelize.define('szwego_product', product, {
@@ -8,6 +9,19 @@ const Product = sequelize.define('szwego_product', product, {
 })
 
 const ProductImg = sequelize.define('szwego_product_img', productImg)
+const ProductStatus = sequelize.define('szwego_product_status', productStatus)
+
+const addStatus = async (data) => {
+  const { name } = data
+  const insertData = {
+    name
+  }
+  const status = await insert(ProductStatus, insertData)
+  return new Promise(resolve => {
+    resolve(status)
+  })
+}
+
 
 const add = async (data) => {
   // console.log(data)
@@ -18,7 +32,8 @@ const add = async (data) => {
     goods_id,
     link,
     time_stamp,
-    title
+    title,
+    status: 1
   }
   let prd = {}
   prd = await select(Product, {
@@ -50,5 +65,7 @@ const add = async (data) => {
 module.exports = {
   Product,
   ProductImg,
-  add
+  ProductStatus,
+  add,
+  addStatus
 }

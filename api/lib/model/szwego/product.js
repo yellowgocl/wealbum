@@ -8,5 +8,10 @@ module.exports = {
   goods_id: DataTypes.STRING,
   link: DataTypes.STRING,
   time_stamp: DataTypes.DATE,
-  title: DataTypes.TEXT
+  title: DataTypes.TEXT,
+  status: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    default: 1
+  }
 }
