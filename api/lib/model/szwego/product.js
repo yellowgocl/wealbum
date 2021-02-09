@@ -12,6 +12,6 @@ module.exports = {
   status: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    default: 1
+    defaultValue: 1
   }
 }

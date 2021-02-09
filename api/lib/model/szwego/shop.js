@@ -7,7 +7,7 @@ module.exports = {
   category_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: -1,
+    defaultValue: 1,
   },
   shop_name: DataTypes.STRING,
   shop_url: DataTypes.STRING,

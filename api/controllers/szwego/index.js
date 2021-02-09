@@ -65,7 +65,7 @@ const syncShopList = async () => {
       const sqlData = {
         user_id,
         shop_id,
-        category_id: -1,
+        category_id: 1,
         shop_name,
         shop_url,
         user_icon,
