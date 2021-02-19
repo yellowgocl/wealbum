@@ -1,11 +1,14 @@
 const user = require('./user')
 const shop = require('./shop')
+const category = require('./category')
+const product = require('./product')
+const productStatus = require('./productStatus')
 const schedule = require('node-schedule')
 const szwegoSql = require('../../lib/mysql/szwego')
 const szwegoApi = require('../../lib/szwegoApi')
 const { map, assign, size, concat, last, isNull } = require('lodash')
-const product = require('../../lib/model/szwego/product')
-const moment = require('moment')
+// const product = require('../../lib/model/szwego/product')
+// const moment = require('moment')
 const ApiErrorNames = require('../../error/ApiErrorNames')
 
 const scheduleCron = {
@@ -158,5 +161,8 @@ const customSync = async (ctx, next) => {
 module.exports = {
   user,
   shop,
+  category,
+  product,
+  productStatus,
   customSync
 }
