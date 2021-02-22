@@ -9,7 +9,7 @@ module.exports = {
     type: DataTypes.STRING,
     allowNull: false
   },
-  shop_id: DataTypes.STRING,
+  album_id: DataTypes.STRING,
   shop_name: DataTypes.STRING,
   union_id: DataTypes.STRING,
   token: DataTypes.STRING

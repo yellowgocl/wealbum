@@ -4,19 +4,20 @@ const productImg = require('../../model/szwego/productImg')
 const { isEmpty, map, forEach, size, assign, omit, clone } = require('lodash')
 const moment = require("moment")
 const { Op } = require('sequelize')
+const modelConfig = require('../../../config/modelConfig')
 
-const Product = sequelize.define('szwego_product', product, {
+const Product = sequelize.define('s_product', product, assign(modelConfig, {
   charset: 'utf8mb4'
-})
+}))
 
-const ProductImg = sequelize.define('szwego_product_img', productImg)
+const ProductImg = sequelize.define('s_product_img', productImg, modelConfig)
 
 
 const add = async (data) => {
   // console.log(data)
-  const { sid, goods_id, link, time_stamp, title, imgs, imgsSrc } = data
+  const { shop_id, goods_id, link, time_stamp, title, imgs, imgsSrc } = data
   const insertData = {
-    sid,
+    shop_id,
     category_id: 1,
     goods_id,
     link,
@@ -36,7 +37,7 @@ const add = async (data) => {
       let i = 0
       while (i < size(imgs)) {
         const imgData = {
-          pid: prd.id,
+          product_id: prd.id,
           img: imgs[i],
           imgSrc: imgsSrc[i]
         }
@@ -72,12 +73,24 @@ const list = async (data) => {
   let currentPage = Number(data.currentPage) || 1
   const limit = Number(data.pageSize) || 50
   let condition = {
-    order: [['time_stamp', order]],
+    // include: [{
+    //   model: ProductImg
+    // }],
+    // include: [ProductImg],
     limit,
+    order: [['time_stamp', order]],
     offset: (currentPage - 1) * limit,
     where: {}
   }
-
+  if (start && end) {
+    const s = moment(Number(start)).format()
+    const e = moment(Number(end)).format()
+    condition.where = assign(condition.where, {
+      time_stamp: {
+        [Op.between]: [s, e]
+      }
+    })
+  }
   const category_id = Number(data.categoryId) || null
   if (category_id) {
     condition.where = assign(condition.where, {
@@ -94,6 +107,7 @@ const list = async (data) => {
   }
 
   let result = await Product.findAndCountAll(condition)
+
   let total = result.count
   const { count } = result
   const totalPages = Math.floor(count / limit) + 1
@@ -102,15 +116,16 @@ const list = async (data) => {
     condition.offset = (currentPage - 1) * limit
     result = await Product.findAndCountAll(condition)
   }
+  
   const { rows } = result
   let products = []
   let i = 0
   while (i < size(rows)) {
     const row = rows[i]
-    const { id, sid, category_id, goods_id, link, time_stamp, title, status } = row
+    const { id, shop_id, category_id, goods_id, link, time_stamp, title, status } = row
     let prd = {
       id,
-      sid,
+      shop_id,
       category_id,
       goods_id,
       link,
@@ -118,11 +133,11 @@ const list = async (data) => {
       title,
       status
     }
-    const imgRows = await select(ProductImg, {
+    const imgRows = await ProductImg.findAll({
       where: {
-        pid: id
+        product_id: id
       }
-    }, true)
+    })
     const imgs = map(imgRows, o => {
       const { img, imgSrc } = o
       return {

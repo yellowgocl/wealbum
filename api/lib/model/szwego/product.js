@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize')
 module.exports = {
-  sid: {
+  shop_id: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
@@ -9,7 +9,7 @@ module.exports = {
   link: DataTypes.STRING,
   time_stamp: DataTypes.DATE,
   title: DataTypes.TEXT,
-  status: {
+  status_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1

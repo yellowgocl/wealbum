@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize')
 module.exports = {
-  sid: {
+  shop_id: {
     type: DataTypes.INTEGER,
     allowNull: false
   },

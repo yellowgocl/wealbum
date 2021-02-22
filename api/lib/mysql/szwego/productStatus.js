@@ -1,7 +1,8 @@
 const { sequelize, insert, select, update, destory } = require('../../pool')
 const productStatus = require('../../model/szwego/productStatus')
+const modelConfig = require('../../../config/modelConfig')
 
-const ProductStatus = sequelize.define('szwego_product_status', productStatus)
+const ProductStatus = sequelize.define('s_product_status', productStatus, modelConfig)
 
 const add = async (data) => {
   const { name } = data

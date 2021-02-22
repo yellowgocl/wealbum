@@ -3,10 +3,11 @@ const syncHistory = require('../../model/szwego/syncHistory')
 const syncOption = require('../../model/szwego/syncOption')
 const shopHistory = require('../../model/szwego/shopHistory')
 const { isEmpty, isArray, size, concat } = require('lodash')
+const modelConfig = require('../../../config/modelConfig')
 
-const SyncHistory = sequelize.define('szwego_sync_history', syncHistory)
-const SyncOption = sequelize.define('szwego_sync_option', syncOption)
-const ShopHistory = sequelize.define('szwego_sync_shop_history', shopHistory)
+const SyncHistory = sequelize.define('s_sync_history', syncHistory, modelConfig)
+const SyncOption = sequelize.define('s_sync_option', syncOption, modelConfig)
+const ShopHistory = sequelize.define('s_sync_shop_history', shopHistory, modelConfig)
 
 const addHistory = async (data) => {
   const history = await insert(SyncHistory, data)
@@ -39,15 +40,15 @@ const getHistorys = async () => {
 }
 
 const addOption = async (data) => {
-  const { sid, start } = data
+  const { shop_id, start } = data
   const item = await select(SyncOption, {
     where: {
-      sid
+      shop_id
     }
   })
   let option = {}
   if (isEmpty(item)) {
-    option = await insert(SyncOption, { sid, start })
+    option = await insert(SyncOption, { shop_id, start })
   } else {
     option = item
   }
@@ -57,10 +58,10 @@ const addOption = async (data) => {
 }
 
 const getOption = async (data) => {
-  const { sid } = data
+  const { shop_id } = data
   const option = await select(SyncOption, {
     where: {
-      sid
+      shop_id
     }
   })
   return new Promise(resolve => {
@@ -69,18 +70,18 @@ const getOption = async (data) => {
 }
 
 const addShopHistory = async (data) => {
-  const { shid, sid } = data
-  const shopHistory = await insert(ShopHistory, { shid, sid })
+  const { sync_history_id, shop_id } = data
+  const shopHistory = await insert(ShopHistory, { sync_history_id, shop_id })
   return new Promise(resolve => {
     resolve(shopHistory)
   })
 }
 
 const getShopHistorys = async (data) => {
-  const { sid } = data
+  const { shop_id } = data
   let shopHistorys = await select(ShopHistory, {
     where: {
-      sid
+      shop_id
     }
   }, true)
   if (!isArray(shopHistorys)) {

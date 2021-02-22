@@ -1,7 +1,8 @@
 const { sequelize, insert, select, update, destory } = require('../../pool')
 const category = require('../../model/szwego/category')
+const modelConfig = require('../../../config/modelConfig')
 
-const Category = sequelize.define('szwego_category', category)
+const Category = sequelize.define('s_category', category, modelConfig)
 
 const { Shop } = require('./shop')
 const { Product } = require('./product')

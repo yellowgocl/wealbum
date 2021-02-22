@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize')
 module.exports = {
-  shid: {
+  sync_history_id: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  sid: DataTypes.INTEGER
+  shop_id: DataTypes.INTEGER
 }

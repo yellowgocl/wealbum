@@ -2,12 +2,14 @@ const { sequelize, select } = require('../pool')
 const { user, role, permission, userRole, rolePermission } = require('../model/user')
 const { Op } = require('sequelize')
 const { assign, isEmpty } = require('lodash')
+const modelConfig = require('../../config/modelConfig')
+
 // 建表
-const User = sequelize.define('t_user', user) // 用户表
-const Role = sequelize.define('t_role', role) // 角色表
-const Permission = sequelize.define('t_permission', permission) // 权限表
-const UserRole = sequelize.define('user_role', userRole) // 用户角色关系
-const RolePermission = sequelize.define('role_permission', rolePermission) // 角色权限关系
+const User = sequelize.define('t_user', user, modelConfig) // 用户表
+const Role = sequelize.define('t_role', role, modelConfig) // 角色表
+const Permission = sequelize.define('t_permission', permission, modelConfig) // 权限表
+const UserRole = sequelize.define('user_role', userRole, modelConfig) // 用户角色关系
+const RolePermission = sequelize.define('role_permission', rolePermission, modelConfig) // 角色权限关系
 
 const initTables = async () => {
   await User.sync()

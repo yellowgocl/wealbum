@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize')
 module.exports = {
-  shop_id: {
+  album_id: {
     type: DataTypes.STRING,
     allowNull: false
   },

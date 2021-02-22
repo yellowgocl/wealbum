@@ -1,10 +1,10 @@
 const { DataTypes } = require('sequelize')
 module.exports = {
-  uid: {
+  user_id: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  sid: {
+  shop_id: {
     type: DataTypes.INTEGER,
     allowNull: false
   },

@@ -3,39 +3,38 @@ const shop = require('../../model/szwego/shop')
 const userShop = require('../../model/szwego/userShop')
 const { isEmpty, map, forEach, assign } = require('lodash')
 const { Product } = require('./product')
+const modelConfig = require('../../../config/modelConfig')
 
-const Shop = sequelize.define('szwego_shop', shop, {
-  charset: 'utf8mb4'
-})
+const Shop = sequelize.define('s_shop', shop, assign(modelConfig, {charset: 'utf8mb4'}))
 
-const UserShop = sequelize.define('szwego_user_shop', userShop)
+const UserShop = sequelize.define('s_user_shop', userShop, modelConfig)
 
 const add = async (data) => {
   const { user_id, ...rest } = data
   let shop = {}
   shop = await select(Shop, {
     where: {
-      shop_id: rest.shop_id
+      album_id: rest.album_id
     }
   })
   if (isEmpty(shop)) {
     shop = await insert(Shop, rest)
     const usData = {
-      uid: user_id,
-      sid: shop.id
+      user_id,
+      shop_id: shop.id
     }
     await insert(UserShop, usData)
     // console.log(insertedItem)
   } else {
     const usItem = await select(UserShop, {
       where: {
-        sid: shop.id
+        shop_id: shop.id
       }
     })
     if (isEmpty(usItem)) {
       await insert(UserShop, {
-        uid: user_id,
-        sid: shop.id
+        user_id,
+        shop_id: shop.id
       })
     } else {
       await update(Shop, rest, {
@@ -52,10 +51,10 @@ const add = async (data) => {
 }
 
 const list = async (params) => {
-  const uid = params.uid || -1
+  const user_id = params.user_id || -1
   const sidList = await select(UserShop, {
     where: {
-      uid
+      user_id
     }
   })
   const list = []
@@ -64,7 +63,7 @@ const list = async (params) => {
     const o = sidList[i]
     const shop = await select(Shop, {
       where: {
-        id: o.sid
+        id: o.shop_id
       }
     })
     list.push(shop)
@@ -77,18 +76,18 @@ const list = async (params) => {
 
 const edit = async (params) => {
   console.log(params)
-  const { sid, cid } = params
-  await update(Shop, { category_id: cid }, {
+  const { shop_id, category_id } = params
+  await update(Shop, { category_id }, {
     where: {
-      id: sid
+      id: shop_id
     }
   })
-  await update(Product, { category_id: cid }, {
+  await update(Product, { category_id }, {
     where: {
-      sid
+      shop_id
     }
   })
-  const shop = await select(Shop, { where: { id: sid }})
+  const shop = await select(Shop, { where: { id: shop_id }})
   return new Promise(resolve => {
     resolve(shop)
   })

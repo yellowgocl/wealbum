@@ -3,8 +3,10 @@ const user = require('../../model/szwego/user')
 const szwegoApi = require('../../szwegoApi')
 const { Op } = require('sequelize')
 const { size } = require('lodash')
+const modelConfig = require('../../../config/modelConfig')
 
-const User = sequelize.define('szwego_user', user) // 用户表
+
+const User = sequelize.define('s_user', user, modelConfig) // 用户表
 
 const add = async (value) => {
   // { name, password }
@@ -21,7 +23,7 @@ const add = async (value) => {
     insertData = {
       name: username,
       password,
-      shop_id,
+      album_id: shop_id,
       shop_name,
       union_id,
       token
@@ -56,7 +58,7 @@ const updateToken = async (user) => {
   if (szwego.errcode === 0) {
     const { shop_id, union_id, shop_name, token } = szwego
     const updateData = {
-      shop_id,
+      album_id: shop_id,
       shop_name,
       union_id,
       token

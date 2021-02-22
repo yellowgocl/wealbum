@@ -4,11 +4,11 @@ const { size, last, assign, concat, map } = require('lodash')
 const moment = require('moment')
 
 const getProductList = async (params, addSqlFun = null) => {
-  const { token, shop_id, id, option, ...rest } = params
+  const { token, album_id, id, option, ...rest } = params
   const startDate = option.start ? moment(option.start).format('YYYY-MM-DD') : '2021-01-01'
   const endDate = option.end ? moment(option.end).format('YYYY-MM-DD') : '2021-01-10'
   let data = {
-    albumId: shop_id,
+    albumId: album_id,
     searchValue: '',
     startDate,
     endDate,
@@ -23,7 +23,7 @@ const getProductList = async (params, addSqlFun = null) => {
       if (addSqlFun) {
         let i = 0
         while (i < size(l)) {
-          const prod_info = assign(l[i], { sid: id })
+          const prod_info = assign(l[i], { shop_id: id })
           console.log(size(prod_info.imgs))
           if (size(prod_info.imgs) >= 9) {
             const prd = await addSqlFun(prod_info)

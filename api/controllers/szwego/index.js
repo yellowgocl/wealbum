@@ -67,7 +67,7 @@ const syncShopList = async () => {
       const { shop_id, shop_name, shop_url, user_icon, new_goods, total_goods } = shop_info
       const sqlData = {
         user_id,
-        shop_id,
+        album_id: shop_id,
         category_id: 1,
         shop_name,
         shop_url,
@@ -77,7 +77,7 @@ const syncShopList = async () => {
       }
       const shop = await szwegoSql.shop.add(sqlData)
       const option = await szwegoSql.sync.addOption({
-        sid: shop.id,
+        shop_id: shop.id,
         start: syncStartDate
       })
       j += 1
@@ -95,22 +95,22 @@ const syncProducts = async (nowtime = null) => {
   let productsTotal = 0
   while (i < size(shopList)) {
     const shop = shopList[i]
-    const shopHistorys = await szwegoSql.sync.getShopHistorys({ sid: shop.id })
+    const shopHistorys = await szwegoSql.sync.getShopHistorys({ shop_id: shop.id })
     const isFirstSync = !(size(shopHistorys) > 0)
     // console.log(`isFirstSync: ${isFirstSync}`)
     let start = ''
     if (isFirstSync) {
       const option = await szwegoSql.sync.getOption({
-        sid: shop.id
+        shop_id: shop.id
       })
       start = option.start
     } else {
-      const his = await szwegoSql.sync.getHistory({ id: last(shopHistorys).shid })
+      const his = await szwegoSql.sync.getHistory({ id: last(shopHistorys).sync_history_id })
       start = his.start
     }
     await szwegoSql.sync.addShopHistory({
-      shid: history.id,
-      sid: shop.id
+      sync_history_id: history.id,
+      shop_id: shop.id
     })
     const end = history.start
     const prdListOption = {
@@ -133,7 +133,7 @@ const getTotalShopList = async () => {
   let i = 0
   while (i < size(ul)) {
     const user = ul[i]
-    let list = await szwegoSql.shop.list({ uid: user.id })
+    let list = await szwegoSql.shop.list({ user_id: user.id })
     list = map(list, (o) => {
       return assign(o, { token: user.token })
     })

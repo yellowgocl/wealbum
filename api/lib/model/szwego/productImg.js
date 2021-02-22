@@ -1,9 +1,9 @@
 const { DataTypes } = require('sequelize')
 module.exports = {
-  pid: {
+  product_id: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
   img: DataTypes.STRING,
-  imgSrc: DataTypes.STRING
+  img_src: DataTypes.STRING
 }
