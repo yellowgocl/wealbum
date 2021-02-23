@@ -1,13 +1,7 @@
-const { sequelize, insert, select, update, destory } = require('../../pool')
-const syncHistory = require('../../model/szwego/syncHistory')
-const syncOption = require('../../model/szwego/syncOption')
-const shopHistory = require('../../model/szwego/shopHistory')
+const { insert, select, update, destory } = require('../../pool')
+const { SyncHistory, SyncOption, ShopHistory } = require('../../model/szwego')
 const { isEmpty, isArray, size, concat } = require('lodash')
-const modelConfig = require('../../../config/modelConfig')
 
-const SyncHistory = sequelize.define('s_sync_history', syncHistory, modelConfig)
-const SyncOption = sequelize.define('s_sync_option', syncOption, modelConfig)
-const ShopHistory = sequelize.define('s_sync_shop_history', shopHistory, modelConfig)
 
 const addHistory = async (data) => {
   const history = await insert(SyncHistory, data)
@@ -93,9 +87,6 @@ const getShopHistorys = async (data) => {
 }
 
 module.exports = {
-  SyncHistory,
-  SyncOption,
-  ShopHistory,
   addOption,
   getOption,
   addHistory,

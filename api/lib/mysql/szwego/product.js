@@ -1,17 +1,8 @@
-const { sequelize, insert, select, update, destory } = require('../../pool')
-const product = require('../../model/szwego/product')
-const productImg = require('../../model/szwego/productImg')
+const { insert, select, update, destory } = require('../../pool')
+const { Product, ProductImg } = require('../../model/szwego')
 const { isEmpty, map, forEach, size, assign, omit, clone } = require('lodash')
 const moment = require("moment")
 const { Op } = require('sequelize')
-const modelConfig = require('../../../config/modelConfig')
-
-const Product = sequelize.define('s_product', product, assign(modelConfig, {
-  charset: 'utf8mb4'
-}))
-
-const ProductImg = sequelize.define('s_product_img', productImg, modelConfig)
-
 
 const add = async (data) => {
   // console.log(data)
@@ -65,6 +56,31 @@ const edit = async (data) => {
   })
   return new Promise(resolve => {
     resolve(prd)
+  })
+}
+
+const removeFromShop = async (shop_id) => {
+  let products = await select(Product, {
+    where: {
+      shop_id
+    }
+  }, true)
+  let i = 0
+  while (i < size(products)) {
+    const prd = products[i]
+    await destory(ProductImg, {
+      where: {
+        product_id: prd.id
+      }
+    })
+  }
+  products = await destory(Product, {
+    where: {
+      shop_id
+    }
+  })
+  return new Promise(resolve => {
+    resolve(products)
   })
 }
 
@@ -161,9 +177,8 @@ const list = async (data) => {
 }
 
 module.exports = {
-  Product,
-  ProductImg,
   add,
   edit,
-  list
+  list,
+  removeFromShop
 }

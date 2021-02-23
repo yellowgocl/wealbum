@@ -1,12 +1,9 @@
-const { sequelize, insert, select, update, destory } = require('../../pool')
-const user = require('../../model/szwego/user')
+const { insert, select, update, destory } = require('../../pool')
+const { User } = require('../../model/szwego')
 const szwegoApi = require('../../szwegoApi')
 const { Op } = require('sequelize')
-const { size } = require('lodash')
-const modelConfig = require('../../../config/modelConfig')
+const { size, assign } = require('lodash')
 
-
-const User = sequelize.define('s_user', user, modelConfig) // 用户表
 
 const add = async (value) => {
   // { name, password }
@@ -29,6 +26,10 @@ const add = async (value) => {
       token
     }
     result = await insert(User, insertData)
+  } else {
+    // szwego.errcode === 221
+    // szwego.errcode === 12061003
+    result = szwego
   }
   return result
 }
@@ -80,8 +81,6 @@ const findUser = async (id) => {
 }
 
 module.exports = {
-  // 暴露方法
-  User,
   findUser,
   add,
   remove,

@@ -1,5 +1,8 @@
 const { DataTypes } = require('sequelize')
-module.exports = {
+const sequelize = require('../../sequelize')
+const modelConfig = require('../../../config/modelConfig')
+
+const User = sequelize.define('s_user', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -13,4 +16,6 @@ module.exports = {
   shop_name: DataTypes.STRING,
   union_id: DataTypes.STRING,
   token: DataTypes.STRING
-}
+}, modelConfig)
+
+module.exports = User

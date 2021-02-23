@@ -1,8 +1,5 @@
-const { sequelize, insert, select, update, destory } = require('../../pool')
-const productStatus = require('../../model/szwego/productStatus')
-const modelConfig = require('../../../config/modelConfig')
-
-const ProductStatus = sequelize.define('s_product_status', productStatus, modelConfig)
+const { insert, select, update, destory } = require('../../pool')
+const { ProductStatus } = require('../../model/szwego')
 
 const add = async (data) => {
   const { name } = data
@@ -48,7 +45,6 @@ const list = async () => {
 }
 
 module.exports = {
-  ProductStatus,
   add,
   remove,
   edit,

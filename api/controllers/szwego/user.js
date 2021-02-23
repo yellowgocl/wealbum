@@ -1,6 +1,8 @@
 const config = require('../../config/szwegoConfig')
-const szwegoSql = require('../../lib/mysql/szwego') 
+const szwegoSql = require('../../lib/mysql/szwego')
+const szwegoApi = require('../../lib/szwegoApi')
 const ApiErrorNames = require('../../error/ApiErrorNames')
+const { size } = require('lodash')
 
 /**
  * 增加账户 
@@ -8,8 +10,30 @@ const ApiErrorNames = require('../../error/ApiErrorNames')
 exports.add = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    const user = await szwegoSql.user.add(body)
-    ctx.body = ApiErrorNames.getSuccessInfo(user)
+    const nowtime = Date.now()
+    const result = await szwegoSql.user.add(body)
+    if (!result.errcode || result.errcode === 0) {
+      const { token, id } = result
+      const sl = await szwegoApi.shop.getAlbumList({ token, timestamp: nowtime })
+      let i = 0
+      while (i < size(sl)) {
+        const shop_info = sl[i]
+        const { shop_id, shop_name, shop_url, user_icon, new_goods, total_goods } = shop_info
+        const sqlData = {
+          user_id: id,
+          album_id: shop_id,
+          category_id: 1,
+          shop_name,
+          shop_url,
+          user_icon,
+          new_goods,
+          total_goods
+        }
+        await szwegoSql.shop.add(sqlData)
+        i += 1
+      }
+    }
+    ctx.body = ApiErrorNames.getSuccessInfo(result)
   } catch (error) {
     ctx.throw(500)
   }
@@ -21,8 +45,19 @@ exports.add = async (ctx, next) => {
 exports.remove = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    const user = await szwegoSql.user.remove(body)
-    ctx.body = ApiErrorNames.getSuccessInfo(user)
+    console.log(body)
+    const user_id = body.id
+    await szwegoSql.shop.removeFromUser(user_id)
+    // const sl = await szwegoSql.shop.list({ user_id })
+    // let i = 0
+    // while (i < size(sl)) {
+    //   const shop = sl[i]
+    //   const shop_id = shop.id
+    //   await szwegoSql.product.removeFromShop(shop_id)
+    //   i += 1
+    // }
+    // const user = await szwegoSql.user.remove(body)
+    ctx.body = ApiErrorNames.getSuccessInfo({})
   } catch (error) {
     ctx.throw(500)
   }

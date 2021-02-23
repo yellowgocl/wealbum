@@ -1,5 +1,9 @@
 const { DataTypes } = require('sequelize')
-module.exports = {
+const sequelize = require('../../sequelize')
+const modelConfig = require('../../../config/modelConfig')
+const { assign } = require('lodash')
+
+const Product = sequelize.define('s_product', {
   shop_id: {
     type: DataTypes.INTEGER,
     allowNull: false
@@ -14,4 +18,8 @@ module.exports = {
     allowNull: false,
     defaultValue: 1
   }
-}
+}, assign(modelConfig, {
+  charset: 'utf8mb4'
+}))
+
+module.exports = Product

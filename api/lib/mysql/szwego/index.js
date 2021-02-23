@@ -4,48 +4,41 @@ const product = require('./product')
 const productStatus = require('./productStatus')
 const sync = require('./sync')
 const category = require('./category')
+const szwegoModel = require('../../model/szwego')
+const { Category, Product, ProductImg, ProductStatus, Shop, ShopHistory, SyncHistory, SyncOption, User, UserShop } = szwegoModel
 
-//
-// category.Category.hasMany(shop.Shop)
-shop.Shop.belongsTo(category.Category, { foreignKey: 'category_id' }) // 
-//
-// shop.Shop.hasOne(shop.UserShop)
-shop.UserShop.belongsTo(shop.Shop, { foreignKey: 'shop_id' }) // 
-// 
-// user.User.hasMany(shop.UserShop)
-shop.UserShop.belongsTo(user.User, { foreignKey: 'user_id' }) // 
-// 
-// shop.Shop.hasMany(product.Product)
-product.Product.belongsTo(shop.Shop, { foreignKey: 'shop_id' }) // 
-// productStatus.ProductStatus.hasMany(product.Product)
-product.Product.belongsTo(productStatus.ProductStatus, { foreignKey: 'status_id' }) // 
-// 
-// product.Product.hasMany(product.ProductImg, { foreignKey: 'product_id'})
-product.ProductImg.belongsTo(product.Product, { foreignKey: 'product_id'}) // 
-// 
-// shop.Shop.hasOne(sync.SyncOption)
-sync.SyncOption.belongsTo(shop.Shop, { foreignKey: 'shop_id' }) // 
-// 
-// shop.Shop.hasMany(sync.ShopHistory)
-sync.ShopHistory.belongsTo(shop.Shop, { foreignKey: 'shop_id' }) // 
-//
-// sync.SyncHistory.hasMany(sync.ShopHistory)
-sync.ShopHistory.belongsTo(sync.SyncHistory, { foreignKey: 'sync_history_id' }) // 
+User.belongsToMany(Shop, { through: UserShop, foreignKey: 'user_id' })
+Shop.belongsToMany(User, { through: UserShop, foreignKey: 'shop_id' })
+
+Category.hasMany(Shop, { foreignKey: 'category_id' })
+Shop.belongsTo(Category, { foreignKey: 'category_id' })
+
+Shop.products = Shop.hasMany(Product, { foreignKey: { name: 'shop_id', allowNull: false }, as: 'products' })
+Product.belongsTo(Shop, { foreignKey: 'shop_id' })
+
+Product.imgs = Product.hasMany(ProductImg, { foreignKey: 'product_id', as: 'imgs' })
+ProductImg.belongsTo(Product, { foreignKey: 'product_id' })
+
+Shop.option = Shop.hasOne(SyncOption, { foreignKey: { name: 'shop_id', allowNull: false }, as: 'option' })
+SyncOption.belongsTo(Shop, { foreignKey: 'shop_id' })
+
+SyncHistory.belongsToMany(Shop, { through: ShopHistory, foreignKey: 'sync_history_id' })
+Shop.belongsToMany(SyncHistory, { through: ShopHistory, foreignKey: 'Shop_id' })
 
 
 const initTables = async () => {
-  await user.User.sync() // { force: true }
-  await category.Category.sync()
-  await shop.Shop.sync()
-  await shop.UserShop.sync()
+  await User.sync({ force: true }) // { force: true }
+  await Category.sync({ force: true })
+  await Shop.sync({ force: true })
+  await UserShop.sync({ force: true })
 
-  await productStatus.ProductStatus.sync()
-  await product.Product.sync()
-  await product.ProductImg.sync()
+  await ProductStatus.sync({ force: true })
+  await Product.sync({ force: true })
+  await ProductImg.sync({ force: true })
   
-  await sync.SyncHistory.sync()
-  await sync.SyncOption.sync()
-  await sync.ShopHistory.sync()
+  await SyncHistory.sync({ force: true })
+  await SyncOption.sync({ force: true })
+  await ShopHistory.sync({ force: true })
 }
 
 initTables()

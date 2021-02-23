@@ -1,13 +1,7 @@
-const { sequelize, insert, select, update, destory } = require('../../pool')
-const shop = require('../../model/szwego/shop')
-const userShop = require('../../model/szwego/userShop')
+const { insert, select, update, destory } = require('../../pool')
+const { Shop, UserShop, Product } = require('../../model/szwego')
 const { isEmpty, map, forEach, assign } = require('lodash')
-const { Product } = require('./product')
-const modelConfig = require('../../../config/modelConfig')
 
-const Shop = sequelize.define('s_shop', shop, assign(modelConfig, {charset: 'utf8mb4'}))
-
-const UserShop = sequelize.define('s_user_shop', userShop, modelConfig)
 
 const add = async (data) => {
   const { user_id, ...rest } = data
@@ -93,10 +87,28 @@ const edit = async (params) => {
   })
 }
 
+const removeFromUser = async (user_id) => {
+  console.log(user_id)
+  const include = [{
+    model: Shop,
+    as: 'shop'
+   }]
+  await UserShop.findAll({
+    include,
+    raw:true
+  }).then(res => {
+    console.log('succes:', res)
+  }).catch(err => {
+    console.error('error:', err)
+  })
+  return new Promise(resolve => {
+    resolve([])
+  })
+}
+
 module.exports = {
-  Shop,
-  UserShop,
   add,
   list,
-  edit
+  edit,
+  removeFromUser
 }
