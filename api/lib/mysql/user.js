@@ -1,11 +1,16 @@
-const { select } = require('../pool')
 const User = require('../model/user')
 const Role = require('../model/role')
 const Permission = require('../model/permission')
 const UserRole = require('../model/userRole')
 const RolePermission = require('../model/rolePermission')
-const { Op } = require('sequelize')
+const { Op, literal } = require('sequelize')
 const { assign, isEmpty } = require('lodash')
+
+User.belongsToMany(Role, { through: UserRole, foreignKey: 'uid', as: 'roles' })
+Role.belongsToMany(User, { through: UserRole, foreignKey: 'rid', as: 'users' })
+
+Role.belongsToMany(Permission, { through: RolePermission, foreignKey: 'rid', as: 'permissions' })
+Permission.belongsToMany(Role, { through: RolePermission, foreignKey: 'pid', as: 'roles' })
 
 const initTables = async () => {
   await User.sync()
@@ -19,40 +24,49 @@ initTables()
 
 // 查询用户是否存在
 const findUser = async (name) => {
-  let result = await select(User, {
+  const u = await User.findOne({
     where: {
       name
     }
   })
-  return result
+  return new Promise(resolve => {
+    resolve(u)
+  })
 }
 // 查询用户以及用户角色
 const findUserAndRole = async (name) => {
-  const u = await select(User, {
+  let u = await User.findOne({
     where: {
       name
     }
   })
-  const { uid } = await select(UserRole, {
+  u = u.toJSON()
+  let ur = await UserRole.findOne({
     where: { uid: u.id }
   })
-  const role = await select(Role, {
-    where: { id: uid }
+  ur = ur.toJSON()
+  const { rid } = ur
+  let r = await Role.findOne({
+    where: { id: rid }
   })
-  let result = assign(u, { roles: [role.name] })
-  return result
+  r = r.toJSON()
+  const result = assign(u, { roles: [r.name] })
+  return new Promise(resolve => {
+    resolve(result)
+  })
 }
 
 // 更新用户登录次数和登录时间
 const updataUserInfo = async (value) => {
-  const { name, ...rest } = value
-  const u = await User.update(rest, {
+  const { id, ...rest } = value
+  let u = await User.update(rest, {
     where: {
-      name
+      id
     }
   })
-  let result = u.length > 0 ? u[0]['dataValues'] : null
-  return result
+  return new Promise(resolve => {
+    resolve(value)
+  })
 }
 
 module.exports = {

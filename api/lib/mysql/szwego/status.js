@@ -1,46 +1,45 @@
-const { insert, select, update, destory } = require('../../pool')
-const { ProductStatus } = require('../../model/szwego')
+const { Status } = require('../../model/szwego')
+const { map } = require('lodash')
 
 const add = async (data) => {
   const { name } = data
   const insertData = {
     name
   }
-  const status = await insert(ProductStatus, insertData)
+  const status = await Status.create(insertData)
   return new Promise(resolve => {
-    resolve(status)
+    resolve(status.toJSON())
   })
 }
 
 const remove = async (data) => {
   const { id } = data
-  const result = await destory(ProductStatus, {
+  const result = await Status.destory({
     where: {
       id
     }
   })
   return new Promise(resolve => {
-    resolve(result)
+    resolve(result.toJSON())
   })
 }
 
 const edit = async (data) => {
   const { id, name } = data
-  await update(ProductStatus, { name }, {
+  const status=await Status.update({ name }, {
     where: {
       id
     }
   })
-  const productStatus = await select(ProductStatus, { where: { id }})
   return new Promise(resolve => {
-    resolve(productStatus)
+    resolve(status.toJSON())
   })
 }
 
 const list = async () => {
-  let list = await select(ProductStatus, {}, true)
+  let list = await Status.findAll()
   return new Promise(resolve => {
-    resolve(list)
+    resolve(map(list, o => { return o.toJSON() }))
   })
 }
 

@@ -8,7 +8,7 @@ exports.add = async (ctx, next) => {
   const { body } = ctx.request
   console.log(body)
   try {
-    const result = await szwegoSql.productStatus.add(body)
+    const result = await szwegoSql.status.add(body)
     ctx.body = ApiErrorNames.getSuccessInfo(result)
   } catch (error) {
     ctx.throw(500)
@@ -21,7 +21,7 @@ exports.add = async (ctx, next) => {
 exports.remove = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    const result = await szwegoSql.productStatus.remove(body)
+    const result = await szwegoSql.status.remove(body)
     ctx.body = ApiErrorNames.getSuccessInfo(result)
   } catch (error) {
     ctx.throw(500)
@@ -34,7 +34,7 @@ exports.remove = async (ctx, next) => {
 exports.edit = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    const result = await szwegoSql.productStatus.edit(body)
+    const result = await szwegoSql.status.edit(body)
     ctx.body = ApiErrorNames.getSuccessInfo(result)
   } catch (error) {
     ctx.throw(500)
@@ -47,7 +47,7 @@ exports.edit = async (ctx, next) => {
 exports.list = async (ctx, next) => {
   const { query } = ctx.request
   try {
-    const result = await szwegoSql.productStatus.list()
+    const result = await szwegoSql.status.list()
     ctx.body = ApiErrorNames.getSuccessInfo(result)
   } catch (error) {
     ctx.throw(500)

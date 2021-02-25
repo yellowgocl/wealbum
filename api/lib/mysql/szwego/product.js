@@ -1,5 +1,4 @@
-const { insert, select, update, destory } = require('../../pool')
-const { Product, ProductImg } = require('../../model/szwego')
+const { Product, Img } = require('../../model/szwego')
 const { isEmpty, map, forEach, size, assign, omit, clone } = require('lodash')
 const moment = require("moment")
 const { Op } = require('sequelize')
@@ -16,27 +15,24 @@ const add = async (data) => {
     title,
     status: 1
   }
-  let prd = {}
-  prd = await select(Product, {
+  const [prd, created] = await Product.findOrCreate({
     where: {
-      goods_id: data.goods_id
-    }
+      goods_id
+    },
+    defaults: insertData
   })
-  if (isEmpty(prd)) {
-    prd = await insert(Product, insertData)
-    if (size(imgs) > 0) {
-      let i = 0
-      while (i < size(imgs)) {
-        const imgData = {
-          product_id: prd.id,
-          img: imgs[i],
-          imgSrc: imgsSrc[i]
-        }
-        await insert(ProductImg, imgData)
-        i += 1
-      }
+  let i = 0
+  while (i < size(imgs)) {
+    const product_id = prd.toJSON().id
+    const thumb = imgs[i]
+    const src = imgsSrc[i]
+    const imgData = {
+      product_id,
+      thumb,
+      src
     }
-  } else {
+    await Img.create(imgData)
+    i += 1
   }
   return new Promise(resolve => {
     resolve(prd)
@@ -49,7 +45,7 @@ const edit = async (data) => {
     title,
     status
   } = data
-  const prd = await update(Product, { status }, {
+  const prd = await Product.update({ status }, {
     where: {
       id
     }
@@ -60,21 +56,22 @@ const edit = async (data) => {
 }
 
 const removeFromShop = async (shop_id) => {
-  let products = await select(Product, {
+  let products = await Product.findAll({
     where: {
       shop_id
     }
-  }, true)
+  })
+  
   let i = 0
   while (i < size(products)) {
     const prd = products[i]
-    await destory(ProductImg, {
+    await Img.destory({
       where: {
-        product_id: prd.id
+        product_id: prd.toJSON().id
       }
     })
   }
-  products = await destory(Product, {
+  products = await Product.destory({
     where: {
       shop_id
     }
@@ -89,10 +86,6 @@ const list = async (data) => {
   let currentPage = Number(data.currentPage) || 1
   const limit = Number(data.pageSize) || 50
   let condition = {
-    // include: [{
-    //   model: ProductImg
-    // }],
-    // include: [ProductImg],
     limit,
     order: [['time_stamp', order]],
     offset: (currentPage - 1) * limit,
@@ -123,7 +116,7 @@ const list = async (data) => {
   }
 
   let result = await Product.findAndCountAll(condition)
-
+  // console.log(result)
   let total = result.count
   const { count } = result
   const totalPages = Math.floor(count / limit) + 1
@@ -138,7 +131,13 @@ const list = async (data) => {
   let i = 0
   while (i < size(rows)) {
     const row = rows[i]
-    const { id, shop_id, category_id, goods_id, link, time_stamp, title, status } = row
+    const { id, shop_id, category_id, goods_id, link, time_stamp, title, status } = row.toJSON()
+    const imgs = await row.getImgs().then(res => {
+      return map(res, o => {
+        const { thumb, src } = o.toJSON()
+        return { thumb, src }
+      })
+    })
     let prd = {
       id,
       shop_id,
@@ -147,21 +146,9 @@ const list = async (data) => {
       link,
       time_stamp: moment(time_stamp).format('YYYY-MM-DD hh:mm:ss'),
       title,
-      status
+      status,
+      imgs
     }
-    const imgRows = await ProductImg.findAll({
-      where: {
-        product_id: id
-      }
-    })
-    const imgs = map(imgRows, o => {
-      const { img, imgSrc } = o
-      return {
-        img,
-        imgSrc
-      }
-    })
-    prd = assign(prd, { imgs })
     products.push(prd)
     i += 1
   }

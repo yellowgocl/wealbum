@@ -64,7 +64,7 @@ exports.info = async (ctx, next) => {
         const updateInfo = await userSql.updataUserInfo({
           loginCount: user.loginCount + 1,
           loginTime: moment().format("YYYY-MM-DD HH:mm:ss"),
-          name: user.name,
+          id: user.id
         });
         const data = {
           avatar: user.avatar,

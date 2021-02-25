@@ -1,44 +1,43 @@
-const { insert, select, update, destory } = require('../../pool')
 const { Shop, UserShop, Product } = require('../../model/szwego')
-const { isEmpty, map, forEach, assign } = require('lodash')
-
+const { isEmpty, map, forEach, assign, size } = require('lodash')
+const { Op } = require("sequelize")
 
 const add = async (data) => {
   const { user_id, ...rest } = data
-  let shop = {}
-  shop = await select(Shop, {
+  const [s_shop, created] = await Shop.findOrCreate({
     where: {
       album_id: rest.album_id
-    }
+    },
+    defaults: rest
   })
-  if (isEmpty(shop)) {
-    shop = await insert(Shop, rest)
-    const usData = {
-      user_id,
-      shop_id: shop.id
-    }
-    await insert(UserShop, usData)
-    // console.log(insertedItem)
-  } else {
-    const usItem = await select(UserShop, {
+  let shop = s_shop
+  if (!created) {
+    await Shop.update(rest, {
       where: {
-        shop_id: shop.id
+        album_id: rest.album_id
       }
     })
-    if (isEmpty(usItem)) {
-      await insert(UserShop, {
-        user_id,
-        shop_id: shop.id
-      })
-    } else {
-      await update(Shop, rest, {
-        where: {
-          id: shop.id
-        }
-      })
-    }
+    shop = await Shop.findAll({
+      where: {
+        album_id: rest.album_id
+      }
+    }).then(res => {
+      const [s] = res
+      return s
+    })
+  } else {
+
   }
-  // return shop
+  const shop_id = shop.toJSON().id
+  await UserShop.findOrCreate({
+    where: {
+      [Op.and]: [{ user_id }, { shop_id }]
+    },
+    defaults: {
+      user_id,
+      shop_id
+    }
+  })
   return new Promise(resolve => {
     resolve(shop)
   })
@@ -46,16 +45,16 @@ const add = async (data) => {
 
 const list = async (params) => {
   const user_id = params.user_id || -1
-  const sidList = await select(UserShop, {
+  let sidList = await UserShop.findAll({
     where: {
       user_id
     }
   })
   const list = []
   let i = 0
-  while (i < sidList.length) {
-    const o = sidList[i]
-    const shop = await select(Shop, {
+  while (i < size(sidList)) {
+    const o = sidList[i].toJSON()
+    const shop = await Shop.findOne({
       where: {
         id: o.shop_id
       }
@@ -71,17 +70,17 @@ const list = async (params) => {
 const edit = async (params) => {
   console.log(params)
   const { shop_id, category_id } = params
-  await update(Shop, { category_id }, {
+  await Shop.update({ category_id }, {
     where: {
       id: shop_id
     }
   })
-  await update(Product, { category_id }, {
+  await Product.update({ category_id }, {
     where: {
       shop_id
     }
   })
-  const shop = await select(Shop, { where: { id: shop_id }})
+  const shop = await Shop.findOne({ where: { id: shop_id }})
   return new Promise(resolve => {
     resolve(shop)
   })

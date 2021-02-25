@@ -1,10 +1,9 @@
-const { insert, select, update, destory } = require('../../pool')
 const { SyncHistory, SyncOption, ShopHistory } = require('../../model/szwego')
-const { isEmpty, isArray, size, concat } = require('lodash')
+const { isEmpty, isArray, size, concat, map, isNull } = require('lodash')
 
 
 const addHistory = async (data) => {
-  const history = await insert(SyncHistory, data)
+  const history = await SyncHistory.create(data)
   return new Promise(resolve => {
     resolve(history)
   })
@@ -12,7 +11,7 @@ const addHistory = async (data) => {
 
 const updateHistory = async (data) => {
   const { id, ...rest } = data
-  const history = await update(SyncHistory, rest, { where: { id } })
+  const history = await SyncHistory.update(rest, { where: { id } })
   return new Promise(resolve => {
     resolve(history)
   })
@@ -20,14 +19,14 @@ const updateHistory = async (data) => {
 
 const getHistory = async (data) => {
   const { id } = data
-  const history = await select(SyncHistory, { where: id })
+  const history = await SyncHistory.findOne({ where: id })
   return new Promise(resolve => {
     resolve(history)
   })
 }
 
 const getHistorys = async () => {
-  const history = await select(SyncHistory, {}, true)
+  const history = await SyncHistory.findAll()
   return new Promise(resolve => {
     resolve(history)
   })
@@ -35,16 +34,18 @@ const getHistorys = async () => {
 
 const addOption = async (data) => {
   const { shop_id, start } = data
-  const item = await select(SyncOption, {
-    where: {
-      shop_id
-    }
-  })
+  const shop = await getOption(data)
   let option = {}
-  if (isEmpty(item)) {
-    option = await insert(SyncOption, { shop_id, start })
+  if (isNull(shop)) {
+    option = await SyncOption.create(data)
   } else {
-    option = item
+    option = await SyncOption.update({
+      start
+    }, {
+        where: {
+          shop_id
+      }
+    })
   }
   return new Promise(resolve => {
     resolve(option)
@@ -53,7 +54,7 @@ const addOption = async (data) => {
 
 const getOption = async (data) => {
   const { shop_id } = data
-  const option = await select(SyncOption, {
+  const option = await SyncOption.findOne({
     where: {
       shop_id
     }
@@ -64,8 +65,11 @@ const getOption = async (data) => {
 }
 
 const addShopHistory = async (data) => {
-  const { sync_history_id, shop_id } = data
-  const shopHistory = await insert(ShopHistory, { sync_history_id, shop_id })
+  // const { sync_history_id, shop_id } = data
+  console.log(data)
+  let shopHistory = await ShopHistory.create(data).then(res => {}).catch(err => {
+    console.log('err:', err)
+  })
   return new Promise(resolve => {
     resolve(shopHistory)
   })
@@ -73,14 +77,11 @@ const addShopHistory = async (data) => {
 
 const getShopHistorys = async (data) => {
   const { shop_id } = data
-  let shopHistorys = await select(ShopHistory, {
+  let shopHistorys = await ShopHistory.findAll({
     where: {
       shop_id
     }
-  }, true)
-  if (!isArray(shopHistorys)) {
-    shopHistorys = [shopHistorys]
-  }
+  })
   return new Promise(resolve => {
     resolve(shopHistorys)
   })

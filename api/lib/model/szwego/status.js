@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize')
 const sequelize = require('../../sequelize')
 const modelConfig = require('../../../config/modelConfig')
 
-const ProductStatus = sequelize.define('s_product_status', {
+const Status = sequelize.define('s_status', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -10,4 +10,4 @@ const ProductStatus = sequelize.define('s_product_status', {
   }
 }, modelConfig)
 
-module.exports = ProductStatus
+module.exports = Status

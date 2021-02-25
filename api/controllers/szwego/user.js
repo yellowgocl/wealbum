@@ -1,4 +1,3 @@
-const config = require('../../config/szwegoConfig')
 const szwegoSql = require('../../lib/mysql/szwego')
 const szwegoApi = require('../../lib/szwegoApi')
 const ApiErrorNames = require('../../error/ApiErrorNames')
@@ -11,9 +10,9 @@ exports.add = async (ctx, next) => {
   const { body } = ctx.request
   try {
     const nowtime = Date.now()
-    const result = await szwegoSql.user.add(body)
-    if (!result.errcode || result.errcode === 0) {
-      const { token, id } = result
+    const user = await szwegoSql.user.add(body)
+    if (!user.errcode || user.errcode === 0) {
+      const { token, id } = user.toJSON()
       const sl = await szwegoApi.shop.getAlbumList({ token, timestamp: nowtime })
       let i = 0
       while (i < size(sl)) {
@@ -29,11 +28,12 @@ exports.add = async (ctx, next) => {
           new_goods,
           total_goods
         }
-        await szwegoSql.shop.add(sqlData)
+        const shop = await szwegoSql.shop.add(sqlData)
+        // console.log(shop)
         i += 1
       }
     }
-    ctx.body = ApiErrorNames.getSuccessInfo(result)
+    ctx.body = ApiErrorNames.getSuccessInfo(user)
   } catch (error) {
     ctx.throw(500)
   }

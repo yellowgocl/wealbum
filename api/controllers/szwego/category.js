@@ -1,4 +1,3 @@
-const config = require('../../config/szwegoConfig')
 const szwegoSql = require('../../lib/mysql/szwego') 
 const ApiErrorNames = require('../../error/ApiErrorNames')
 
@@ -10,7 +9,7 @@ exports.add = async (ctx, next) => {
   try {
     const category = await szwegoSql.category.add(body)
     // const category = {}
-    ctx.body = ApiErrorNames.getSuccessInfo(category)
+    ctx.body = ApiErrorNames.getSuccessInfo(category.toJSON())
   } catch (error) {
     ctx.throw(500)
   }
@@ -22,8 +21,8 @@ exports.add = async (ctx, next) => {
 exports.remove = async (ctx, next) => {
   const { body } = ctx.request
   try {
-    const category = await szwegoSql.category.remove(body)
-    ctx.body = ApiErrorNames.getSuccessInfo(category)
+    await szwegoSql.category.remove(body)
+    ctx.body = ApiErrorNames.getSuccessInfo('删除成功')
   } catch (error) {
     ctx.throw(500)
   }

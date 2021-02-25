@@ -2,13 +2,13 @@ const { DataTypes } = require('sequelize')
 const sequelize = require('../../sequelize')
 const modelConfig = require('../../../config/modelConfig')
 
-const ProductImg = sequelize.define('s_product_img', {
+const Img = sequelize.define('s_img', {
   product_id: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  img: DataTypes.STRING,
-  img_src: DataTypes.STRING
+  thumb: DataTypes.STRING,
+  src: DataTypes.STRING
 }, modelConfig)
 
-module.exports = ProductImg
+module.exports = Img

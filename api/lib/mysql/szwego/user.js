@@ -1,8 +1,7 @@
-const { insert, select, update, destory } = require('../../pool')
 const { User } = require('../../model/szwego')
 const szwegoApi = require('../../szwegoApi')
 const { Op } = require('sequelize')
-const { size, assign } = require('lodash')
+const { size, assign, isEmpty, map } = require('lodash')
 
 
 const add = async (value) => {
@@ -25,28 +24,43 @@ const add = async (value) => {
       union_id,
       token
     }
-    result = await insert(User, insertData)
+    insertData
+    result = await User.findOrCreate({
+      where: {
+        album_id: shop_id
+      },
+      defaults: insertData
+    }).then(res => {
+      const [user, created] = res
+      return user
+    })
   } else {
     // szwego.errcode === 221
     // szwego.errcode === 12061003
     result = szwego
   }
-  return result
+  return new Promise(resolve => {
+    resolve(result)
+  })
 }
 
 const remove = async (value) => {
   const { id } = value
-  let result = await destory(User, {
+  await User.destory({
     where: {
       id
     }
   })
-  return result
+  return new Promise(resolve => {
+    resolve(value)
+  })
 }
 
 const list = async () => {
-  const userList = await select(User, {}, true)
-  return userList
+  const userList = await User.findAll()
+  return new Promise(resolve => {
+    resolve(userList)
+  })
 }
 
 const updateToken = async (user) => {
@@ -64,7 +78,7 @@ const updateToken = async (user) => {
       union_id,
       token
     }
-    await update(User, updateData, { where: { id }})
+    await User.update(updateData, { where: { id }})
   }
   return new Promise(resolve => {
     resolve(szwego)
@@ -72,12 +86,14 @@ const updateToken = async (user) => {
 }
 
 const findUser = async (id) => {
-  let result = await select(User, {
+  let user = await User.findOne({
     where: {
       id
     }
   })
-  return result
+  return new Promise(resolve => {
+    resolve(user)
+  })
 }
 
 module.exports = {

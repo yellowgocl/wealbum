@@ -1,44 +1,48 @@
-const { insert, select, update, destory } = require('../../pool')
 const { Category, Shop, Product } = require('../../model/szwego')
+const { map } = require('lodash')
 
 const add = async (data) => {
   // console.log(data)
   const { name } = data
-  const insertData = {
-    name
-  }
-  const result = await insert(Category, insertData)
+  const category = await Category.create({ name })
   return new Promise(resolve => {
-    resolve(result)
+    resolve(category)
   })
 }
 
 const remove = async (data) => {
   const { id } = data
-  let cat = {}
+  
   if (id > 1) {
-    const shop = await update(Shop, { category_id: 1 }, { where: { category_id: id } })
-    const product = await update(Product, { category_id: 1 }, { where: { category_id: id } })
-    cat = await destory(Category, {
+    console.log(id)
+    await Shop.update({ category_id: 1 }, { where: { category_id: id } })
+    await Product.update({ category_id: 1 }, { where: { category_id: id } })
+    await Category.destroy({
       where: {
         id
       }
     })
   }
   return new Promise(resolve => {
-    resolve(cat)
+    resolve(data)
   })
 }
 
 const edit = async (data) => {
   console.log('categoryEdit:', data)
+  const { id, ...rest } = data
+  const category = Category.update(rest, {
+    where: {
+      id
+    }
+  })
   return new Promise(resolve => {
-    resolve({})
+    resolve(category)
   })
 }
 
 const list = async () => {
-  let list = await select(Category, {}, true)
+  let list = await Category.findAll()
   return new Promise(resolve => {
     resolve(list)
   })

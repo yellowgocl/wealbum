@@ -2,7 +2,7 @@ const user = require('./user')
 const shop = require('./shop')
 const category = require('./category')
 const product = require('./product')
-const productStatus = require('./productStatus')
+const status = require('./status')
 const schedule = require('node-schedule')
 const szwegoSql = require('../../lib/mysql/szwego')
 const szwegoApi = require('../../lib/szwegoApi')
@@ -18,8 +18,8 @@ const scheduleCron = {
 
 const time_zone = 8
 
-let syncStartDate = '2020-01-01 00:00:00' // 1609430400000
-let syncEndDate = '2021-01-10 00:00:00' // 1610208000000
+let syncStartDate = '2021-02-01 00:00:00' // 1609430400000
+let syncEndDate = '2021-02-24 00:00:00' // 1610208000000
 
 let isSyncing = false
 
@@ -57,7 +57,7 @@ const syncShopList = async () => {
   let i = 0
   let nowtime = Date.now()
   while (i < size(ul)) {
-    const user = ul[i]
+    const user = ul[i].toJSON()
     const { token } = await szwegoSql.user.updateToken(user)
     const user_id = user.id
     const sl = await szwegoApi.shop.getAlbumList({ token, timestamp: nowtime })
@@ -76,8 +76,8 @@ const syncShopList = async () => {
         total_goods
       }
       const shop = await szwegoSql.shop.add(sqlData)
-      const option = await szwegoSql.sync.addOption({
-        shop_id: shop.id,
+      await szwegoSql.sync.addOption({
+        shop_id: shop.toJSON().id,
         start: syncStartDate
       })
       j += 1
@@ -103,10 +103,10 @@ const syncProducts = async (nowtime = null) => {
       const option = await szwegoSql.sync.getOption({
         shop_id: shop.id
       })
-      start = option.start
+      start = option.toJSON().start
     } else {
       const his = await szwegoSql.sync.getHistory({ id: last(shopHistorys).sync_history_id })
-      start = his.start
+      start = his.toJSON().start
     }
     await szwegoSql.sync.addShopHistory({
       sync_history_id: history.id,
@@ -132,10 +132,11 @@ const getTotalShopList = async () => {
   let sl = []
   let i = 0
   while (i < size(ul)) {
-    const user = ul[i]
+    const user = ul[i].toJSON()
     let list = await szwegoSql.shop.list({ user_id: user.id })
     list = map(list, (o) => {
-      return assign(o, { token: user.token })
+      const item = o.toJSON()
+      return assign(item, { token: user.token })
     })
     sl = concat(sl, list)
     i += 1
@@ -163,6 +164,6 @@ module.exports = {
   shop,
   category,
   product,
-  productStatus,
+  status,
   customSync
 }

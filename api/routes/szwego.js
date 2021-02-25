@@ -24,10 +24,10 @@ router.post('/szwego/product/edit', szwegoControl.product.edit)
 router.get('/szwego/product/list', szwegoControl.product.list)
 
 // productStatus
-router.post('/szwego/productStatus/add', szwegoControl.productStatus.add)
-router.post('/szwego/productStatus/remove', szwegoControl.productStatus.remove)
-router.post('/szwego/productStatus/edit', szwegoControl.productStatus.edit)
-router.get('/szwego/productStatus/list', szwegoControl.productStatus.list)
+router.post('/szwego/status/add', szwegoControl.status.add)
+router.post('/szwego/status/remove', szwegoControl.status.remove)
+router.post('/szwego/status/edit', szwegoControl.status.edit)
+router.get('/szwego/status/list', szwegoControl.status.list)
 
 // test
 router.get('/szwego/customSync', szwegoControl.customSync)

@@ -1,15 +1,23 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../sequelize')
 const modelConfig = require('../../config/modelConfig')
+const Role = require('./role')
+const Permission = require('./permission')
 
 const RolePermission = sequelize.define('role_permission', {
   rid: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    references: {
+      model: Role,
+      key: 'id'
+    }
   },
   pid: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    references: {
+      model: Permission,
+      key: 'id'
+    }
   }
 }, modelConfig) // 角色权限关系
 

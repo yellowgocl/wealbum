@@ -40,7 +40,7 @@ exports.list = async (ctx, next) => {
     let list = await szwegoSql.shop.list({ user_id: userId })
     const categorys = await szwegoSql.category.list()
     list = map(list, (o) => {
-      const { category_id, ...rest } = o
+      const { category_id, ...rest } = o.toJSON()
       const category = find(categorys, c => {
         return category_id === c.id
       })
