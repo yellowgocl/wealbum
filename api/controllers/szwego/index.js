@@ -50,6 +50,8 @@ const resetProgress = () => {
   user.completed = shop.completed = product.completed = 0
 }
 
+const downloadZip = async (ctx, next) => {}
+
 const syncShopList = async () => {
   if (isSyncing) return
   isSyncing = true
@@ -108,10 +110,11 @@ const syncProducts = async (nowtime = null) => {
       const his = await szwegoSql.sync.getHistory({ id: last(shopHistorys).sync_history_id })
       start = his.toJSON().start
     }
-    await szwegoSql.sync.addShopHistory({
+    const shopHis = await szwegoSql.sync.addShopHistory({
       sync_history_id: history.id,
       shop_id: shop.id
     })
+    console.log('shopHistory:', shopHis.toJSON())
     const end = history.start
     const prdListOption = {
       start,
@@ -165,5 +168,6 @@ module.exports = {
   category,
   product,
   status,
-  customSync
+  customSync,
+  downloadZip
 }

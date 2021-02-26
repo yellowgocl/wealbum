@@ -5,10 +5,10 @@ const { Op } = require('sequelize')
 
 const add = async (data) => {
   // console.log(data)
-  const { shop_id, goods_id, link, time_stamp, title, imgs, imgsSrc } = data
+  const { shop_id, category_id, goods_id, link, time_stamp, title, imgs, imgsSrc } = data
   const insertData = {
     shop_id,
-    category_id: 1,
+    category_id,
     goods_id,
     link,
     time_stamp,
@@ -21,18 +21,20 @@ const add = async (data) => {
     },
     defaults: insertData
   })
-  let i = 0
-  while (i < size(imgs)) {
-    const product_id = prd.toJSON().id
-    const thumb = imgs[i]
-    const src = imgsSrc[i]
-    const imgData = {
-      product_id,
-      thumb,
-      src
+  if (created) {
+    let i = 0
+    while (i < size(imgs)) {
+      const product_id = prd.toJSON().id
+      const thumb = imgs[i]
+      const src = imgsSrc[i]
+      const imgData = {
+        product_id,
+        thumb,
+        src
+      }
+      await Img.create(imgData)
+      i += 1
     }
-    await Img.create(imgData)
-    i += 1
   }
   return new Promise(resolve => {
     resolve(prd)

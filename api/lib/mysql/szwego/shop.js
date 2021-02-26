@@ -12,7 +12,7 @@ const add = async (data) => {
   })
   let shop = s_shop
   if (!created) {
-    await Shop.update(rest, {
+    await Shop.update(assign(rest, {category_id: shop.toJSON().category_id}), {
       where: {
         album_id: rest.album_id
       }
@@ -25,8 +25,6 @@ const add = async (data) => {
       const [s] = res
       return s
     })
-  } else {
-
   }
   const shop_id = shop.toJSON().id
   await UserShop.findOrCreate({

@@ -66,10 +66,7 @@ const getOption = async (data) => {
 
 const addShopHistory = async (data) => {
   // const { sync_history_id, shop_id } = data
-  console.log(data)
-  let shopHistory = await ShopHistory.create(data).then(res => {}).catch(err => {
-    console.log('err:', err)
-  })
+  const shopHistory = await ShopHistory.create(data)
   return new Promise(resolve => {
     resolve(shopHistory)
   })
