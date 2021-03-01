@@ -31,7 +31,9 @@ router.post('/szwego/status/edit', szwegoControl.status.edit)
 router.get('/szwego/status/list', szwegoControl.status.list)
 
 // test
-router.get('/szwego/customSync', szwegoControl.customSync)
+router.get('/szwego/sync', szwegoControl.sync)
+router.get('/szwego/progress', szwegoControl.progress)
+
 
 module.exports = router
 //将页面暴露出去

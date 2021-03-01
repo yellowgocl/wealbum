@@ -56,7 +56,6 @@ exports.info = async (ctx, next) => {
         ctx.body = ApiErrorNames.getErrorInfo(ApiErrorNames.INVALID_TOKEN);
         return;
       }
-      // payload = await jwt.verify(token.split(' ')[1], config.secret) // 解密，获取payload
       const user = await userSql.findUserAndRole(payload.data);
       if (!user) {
         ctx.body = ApiErrorNames.getErrorInfo(ApiErrorNames.USER_NOT_EXIST);

@@ -3,14 +3,14 @@ const Role = require('../model/role')
 const Permission = require('../model/permission')
 const UserRole = require('../model/userRole')
 const RolePermission = require('../model/rolePermission')
-const { Op, literal } = require('sequelize')
-const { assign, isEmpty } = require('lodash')
+const { Op } = require('sequelize')
+const { assign, isEmpty, map } = require('lodash')
 
-User.belongsToMany(Role, { through: UserRole, foreignKey: 'uid', as: 'roles' })
-Role.belongsToMany(User, { through: UserRole, foreignKey: 'rid', as: 'users' })
+User.role = User.belongsToMany(Role, { through: { model: UserRole, unique: false }, as: 'roles', foreignKey: 'uid' })
+Role.user = Role.belongsToMany(User, { through: { model: UserRole, unique: false }, as: 'users', foreignKey: 'rid' })
 
-Role.belongsToMany(Permission, { through: RolePermission, foreignKey: 'rid', as: 'permissions' })
-Permission.belongsToMany(Role, { through: RolePermission, foreignKey: 'pid', as: 'roles' })
+Role.permission = Role.belongsToMany(Permission, { through: { model: RolePermission, unique: false }, as: 'permissions', foreignKey: 'rid' })
+Permission.role = Permission.belongsToMany(Role, { through: { model: RolePermission, unique: false }, as: 'roles', foreignKey: 'pid' })
 
 const initTables = async () => {
   await User.sync()
@@ -35,24 +35,30 @@ const findUser = async (name) => {
 }
 // 查询用户以及用户角色
 const findUserAndRole = async (name) => {
-  let u = await User.findOne({
+  let u = await User.findAll({
+    attributes: ['id', 'name', 'avatar', 'mobile', 'email'],
+    include: [
+      {
+        model: Role,
+        as: 'roles',
+        attributes: ['name']
+      }
+    ],
+    // raw:true,
     where: {
       name
     }
+  }).then(res => {
+    // console.log('res:', res)
+    const [user] = res
+    return user
+  }).catch(err => {
+    console.log('err:', err)
   })
   u = u.toJSON()
-  let ur = await UserRole.findOne({
-    where: { uid: u.id }
-  })
-  ur = ur.toJSON()
-  const { rid } = ur
-  let r = await Role.findOne({
-    where: { id: rid }
-  })
-  r = r.toJSON()
-  const result = assign(u, { roles: [r.name] })
+  // const result = assign(u, { roles: [r.name] })
   return new Promise(resolve => {
-    resolve(result)
+    resolve(u)
   })
 }
 

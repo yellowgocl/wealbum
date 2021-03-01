@@ -45,9 +45,9 @@ const edit = async (data) => {
   const {
     id,
     title,
-    status
+    status_id
   } = data
-  const prd = await Product.update({ status }, {
+  const prd = await Product.update({ status_id }, {
     where: {
       id
     }
@@ -133,7 +133,7 @@ const list = async (data) => {
   let i = 0
   while (i < size(rows)) {
     const row = rows[i]
-    const { id, shop_id, category_id, goods_id, link, time_stamp, title, status } = row.toJSON()
+    const { id, shop_id, category_id, goods_id, link, time_stamp, title, status_id } = row.toJSON()
     const imgs = await row.getImgs().then(res => {
       return map(res, o => {
         const { thumb, src } = o.toJSON()
@@ -148,7 +148,7 @@ const list = async (data) => {
       link,
       time_stamp: moment(time_stamp).format('YYYY-MM-DD hh:mm:ss'),
       title,
-      status,
+      status_id,
       imgs
     }
     products.push(prd)
