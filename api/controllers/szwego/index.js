@@ -2,6 +2,7 @@ const user = require('./user')
 const shop = require('./shop')
 const category = require('./category')
 const product = require('./product')
+const ws = require('./ws')
 const status = require('./status')
 const schedule = require('node-schedule')
 const szwegoSql = require('../../lib/mysql/szwego')
@@ -49,8 +50,6 @@ const resetProgress = () => {
   user.total = shop.total = product.total = 0
   user.completed = shop.completed = product.completed = 0
 }
-
-const downloadZip = async (ctx, next) => {}
 
 const syncShopList = async () => {
   if (isSyncing) return
@@ -168,6 +167,6 @@ module.exports = {
   category,
   product,
   status,
-  customSync,
-  downloadZip
+  ws,
+  customSync
 }

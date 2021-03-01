@@ -1,5 +1,7 @@
 const Koa = require('koa')
-const app = new Koa()
+const router = require('koa-router')()
+const websockify = require('koa-websocket')
+const app = websockify(new Koa())
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
@@ -14,7 +16,13 @@ const cors = require('koa2-cors')
 // controlers
 const users = require('./routes/user')
 const szwego = require('./routes/szwego')
+const ws = require('./routes/ws')
 const ApiErrorNames = require('./error/ApiErrorNames.js')
+
+app.ws.use((ctx, next) => {
+  ctx.websocket.send("连接成功")
+  return next(ctx)
+})
 
 // error handler
 onerror(app)
@@ -91,6 +99,7 @@ app.use(async (ctx, next) => {
 // routes
 app.use(users.routes(), users.allowedMethods())
 app.use(szwego.routes(), szwego.allowedMethods())
+app.ws.use(ws.routes(), ws.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

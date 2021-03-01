@@ -22,15 +22,13 @@ router.get('/szwego/category/list', szwegoControl.category.list)
 // product
 router.post('/szwego/product/edit', szwegoControl.product.edit)
 router.get('/szwego/product/list', szwegoControl.product.list)
+router.post('/szwego/product/download', szwegoControl.product.download)
 
 // productStatus
 router.post('/szwego/status/add', szwegoControl.status.add)
 router.post('/szwego/status/remove', szwegoControl.status.remove)
 router.post('/szwego/status/edit', szwegoControl.status.edit)
 router.get('/szwego/status/list', szwegoControl.status.list)
-
-// 下载
-router.post('/szwego/downloadZip', szwegoControl.downloadZip)
 
 // test
 router.get('/szwego/customSync', szwegoControl.customSync)
