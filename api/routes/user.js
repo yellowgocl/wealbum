@@ -13,7 +13,7 @@ router.post('/user/login', userControl.login)
 router.post('/user/add', userControl.add)
 router.post('/user/remove', userControl.remove)
 // router.post('/user/edit', userControl.edit)
-// router.get('/user/list', userControl.list)
+router.get('/user/list', userControl.list)
 
 module.exports = router
 //将页面暴露出去

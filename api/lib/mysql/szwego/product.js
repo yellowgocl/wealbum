@@ -83,7 +83,7 @@ const removeFromShop = async (shop_id) => {
   })
 }
 
-const list = async (data) => {
+const list = async (data, isAdmin = true) => {
   const { title, start, end, order } = data
   let currentPage = Number(data.currentPage) || 1
   const limit = Number(data.pageSize) || 50
@@ -92,6 +92,11 @@ const list = async (data) => {
     order: [['time_stamp', order]],
     offset: (currentPage - 1) * limit,
     where: {}
+  }
+  if (!isAdmin) {
+    condition.where = assign(condition.where, {
+      status_id: 1
+    })
   }
   if (start && end) {
     const s = moment(Number(start)).format()

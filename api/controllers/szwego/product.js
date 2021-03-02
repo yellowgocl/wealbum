@@ -1,9 +1,10 @@
 const szwegoSql = require('../../lib/mysql/szwego') 
 const ApiErrorNames = require('../../error/ApiErrorNames')
-const { size, map, head } = require('lodash')
+const { size, map, head, isUndefined } = require('lodash')
 const fs = require('fs')
 const request = require('../../lib/request')
 const zipper = require('zip-local')
+const userSql = require("../../lib/mysql/user")
 /**
  * 产品列表
  */
@@ -20,7 +21,11 @@ exports.list = async (ctx, next) => {
   // const { body } = ctx.request
   const { query } = ctx
   try {
-    const list = await szwegoSql.product.list(query)
+    const authValue = ctx.header.authorization
+    const token = isUndefined(authValue) ? null : authValue
+    const { user, flag, message } = await userSql.findUserByToken(token)
+    const isAdmin = user.roles === 'admin'
+    const list = await szwegoSql.product.list(query, isAdmin)
     ctx.body = ApiErrorNames.getSuccessInfo(list)
   } catch (error) {
     ctx.throw(500)
